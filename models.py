@@ -11,6 +11,7 @@ class Team:
     X = 1
     O = 2
 
+    @staticmethod
     def next(team):
         '''
         Given a valid team, this method will return the opposite team.
@@ -23,6 +24,21 @@ class Team:
 
         '''
         return Team.X + Team.O - team
+
+
+    @staticmethod
+    def get_string(team):
+        '''
+        Parameters
+            team: int, valid Team constant
+
+        Return
+            str, representation of team as one-character string
+
+        '''
+        if team == Team.X: return 'X'
+        elif team == Team.O: return 'O'
+        else: return ' '
 
 
 class Board:
@@ -51,10 +67,18 @@ class Board:
         else:
             # board starts with (size * size) empty spaces, belonging to
             # neither team
-            self.__spaces__ = [Team.NEITHER for _ in range(Board.SIZE) ** 2]
+            self.__spaces__ = [Team.NEITHER for _ in range(Board.SIZE ** 2)]
 
             # set turn field to team who plays first (always X)
             self.__turn__ = Team.X
+
+
+    def __iter__(self):
+        '''
+        Return
+            iter, iterator representing values of pieces on board.
+        '''
+        return iter(self.__spaces__)
 
 
     def __str__(self):
@@ -62,13 +86,16 @@ class Board:
         Return
             str, board in printable format.
         '''
+        to_print = tuple([Team.get_string(space) for space in self.__spaces__])
         return '\n'.join([
+            '',
             ' %s | %s | %s ',
             '-----------',
             ' %s | %s | %s ',
             '-----------',
-            ' %s | %s | %s '
-        ]) % tuple(self.__spaces__)
+            ' %s | %s | %s ',
+            ''
+        ]) % to_print
 
 
     def move(self, ind):

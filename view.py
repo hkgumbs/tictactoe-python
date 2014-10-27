@@ -2,29 +2,43 @@
 Handle IO for tic-tac-toe game.
 '''
 
+from ai import get_winner
+from messages import instructions, help
 from models import Board
 
 def main():
     '''
-    Control and loop game indefeinitely until user quits.
+    Control and loop game indefinitely until user quits.
     '''
-    print 'Welcome to un anbeatable tic-tac-toe game!'
-    print '\n'
+    # print instructions to terminal
+    print instructions
 
+    # initialize board and game status
     board = Board()
-    next_move = None
-    count = 0
-    while not next_move:
-        print board, '\n'
+    num_moves = 0
+    game_ongoing = True
+
+    while game_ongoing:
+        print board
         try:
-            next_move = int(raw_input())
-            board.move(next_move)
-            count += 1
-            if count > 9:
-                break
-        except:
-            next_move = None
+            # TODO
+            next_move = int(raw_input('>>> '))
+            board = board.move(next_move)
+            num_moves += 1
+
+            # TODO
+            winner = get_winner(board)
+            spaces_remaining = num_moves < Board.SIZE ** 2
+            game_ongoing = not winner and spaces_remaining
+        
+        except Exception, e:
+            # TODO
+            print e
+            print help
+
+        # print new line for readability
+        print ''
 
 
-if __name__ == '__main':
+if __name__ == '__main__':
     main()
