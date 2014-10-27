@@ -11,7 +11,6 @@ class Team:
     X = 1
     O = 2
 
-
     def next(team):
         '''
         Given a valid team, this method will return the opposite team.
@@ -46,59 +45,71 @@ class Board:
         '''
 
         if copy:
-            self.__spaces__ = [list(row) for row in copy.__spaces__]
+            self.__spaces__ = list(copy.__spaces__)  # copy list
             self.__turn__ = copy.__turn__
 
         else:
             # board starts with (size * size) empty spaces, belonging to
             # neither team
-            self.__spaces__ = [
-                [Team.NEITHER for _ in range(
-                    Board.SIZE)] for _ in range(Board.SIZE)
-            ]
+            self.__spaces__ = [Team.NEITHER for _ in range(Board.SIZE) ** 2]
 
             # set turn field to team who plays first (always X)
             self.__turn__ = Team.X
 
 
-    def move(self, row, col):
+    def __str__(self):
+        '''
+        Return
+            str, board in printable format.
+        '''
+        return '\n'.join([
+            ' %s | %s | %s ',
+            '-----------',
+            ' %s | %s | %s ',
+            '-----------',
+            ' %s | %s | %s '
+        ]) % tuple(self.__spaces__)
+
+
+    def move(self, ind):
         '''
         Take turn as current team in specified position.
 
         Parameters
-            row: int, row in which to play piece
-            col: int, column in which to play piece
+            ind: int, index of where to play piece, [0,9)
 
         Return
             new Board with move 
 
         '''
         # raise exception for invalid move
-        self.check_bounds(row, col)
-        if self.__spaces__[row][col]:
+        if ind < 0 or ind >= Board.SIZE ** 2:
+            raise Exception('Invalid index value!')
+        if self.__spaces__[ind]:
             raise Exception('Space already occupied!')
 
         # proceed with move by making copy and updating fields
         copy = Board(self)
-        copy.__spaces__[row][col] = self.__turn__
+        copy.__spaces__[ind] = self.__turn__
         copy.__turn__ = Team.next(self.__turn__)
         return copy
 
 
-    def get(self, row, col):
+    def get(self, ind):
         '''
         Get piece in current space
 
         Parameters
-            row: int, row check
-            col: int, column to check
+            ind: int, index of space [0,9)
 
         Return
             int, Team.X, Team.O, or Team.NEITHER
 
         '''
-        self.check_bounds(row, col)
-        return self.__spaces__[row][col]
+        if ind < 0 or ind >= Board.SIZE ** 2:
+            raise Exception('Invalid index value!')
+        return self.__spaces__[ind]
+
 
     def turn(self):
         '''
@@ -107,19 +118,3 @@ class Board:
 
         '''
         return self.__turn__
-
-
-    def check_bounds(self, row, col):
-        '''
-        Throw exception if value is out of bounds of this board.
-
-        Parameters
-            row: int, row to check
-            col: int, column to check
-
-        '''
-        # raise exception for out-of-range input
-        if row < 0 or row >= Board.SIZE:
-            raise Exception('Invalid value for row!')
-        if col < 0 or col >= Board.SIZE:
-            raise Exception('Invalid value for column!')
