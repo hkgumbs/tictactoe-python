@@ -6,8 +6,9 @@ board of variable width.
 class Team:
     '''
     Constants that represent the different valid states of a space or turn.
+    NEITHER is garunteed to evaluate to False.
     '''
-    NEITHER = None
+    NEITHER = 0
     X = 1
     O = 2
 
