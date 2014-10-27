@@ -1,6 +1,5 @@
 '''
-Defines the unbeatable tic-tac-toe game with exactly 2 teams and a square
-board of variable width.
+Defines the game board, which is a 3-by-3 square for exactly 2 teams.
 '''
 
 class Team:
@@ -29,20 +28,21 @@ class Team:
 
 class Board:
     '''
-    Encapsulation of spaces and board state. This class is immutable to make
-    recursive operations more intuitive. The Board object keeps track of which
-    team will make the next move, but it is unaware of conditions for victory.
-    Therefore, a Board object cannot tell if the game is over or who has won.
+    Encapsulation of spaces and board state. This class is effectively
+    immutable to make recursive operations more intuitive. The Board object
+    keeps track of which team will make the next move, but it is unaware of
+    conditions for victory. Therefore, a Board object cannot tell if the game
+    is over or who has won.
     '''
+    SIZE = 3
 
-
-    def __init__(self, size=3, copy=None):
+    def __init__(self, copy=None):
         '''
         Initialize board spaces and current turn state.
 
         Parameters
-            size: int, dimmensions for new (size * size) board
             copy: Board, board to copy
+
         '''
 
         if copy:
@@ -53,7 +53,8 @@ class Board:
             # board starts with (size * size) empty spaces, belonging to
             # neither team
             self.__spaces__ = [
-                [Team.NEITHER for _ in range(size)] for _ in range(size)
+                [Team.NEITHER for _ in range(
+                    Board.SIZE)] for _ in range(Board.SIZE)
             ]
 
             # set turn field to team who plays first (always X)
@@ -103,6 +104,7 @@ class Board:
         '''
         Return
             int, Team who will play next
+
         '''
         return self.__turn__
 
@@ -117,7 +119,7 @@ class Board:
 
         '''
         # raise exception for out-of-range input
-        if row < 0 or row >= len(self.__spaces__):
+        if row < 0 or row >= Board.SIZE:
             raise Exception('Invalid value for row!')
-        if col < 0 or col >= len(self.__spaces__):
+        if col < 0 or col >= Board.SIZE:
             raise Exception('Invalid value for column!')
