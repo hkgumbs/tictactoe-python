@@ -51,18 +51,20 @@ class Board:
     '''
     SIZE = 3
 
-    def __init__(self, copy=None):
+    def __init__(self, predecessor=None, move=None):
         '''
         Initialize board spaces and current turn state.
 
         Parameters
-            copy: Board, board to copy
+            predecessor: Board, board to base copy off
 
         '''
 
-        if copy:
-            self.__spaces__ = list(copy.__spaces__)  # copy list
-            self.__turn__ = copy.__turn__
+        if predecessor and move:
+            self.__spaces__ = list(predecessor.__spaces__)  # copy list
+            self.__spaces__[move] = predecessor.__turn__
+            self.__turn__ = Team.next(predecessor.__turn__)
+            self.__last__ = predecessor
 
         else:
             # board starts with (size * size) empty spaces, belonging to
@@ -71,6 +73,9 @@ class Board:
 
             # set turn field to team who plays first (always X)
             self.__turn__ = Team.X
+
+            # empty board is its own predecessor, so undo is circular
+            self.__last__ = self
 
 
     def __iter__(self):
@@ -114,20 +119,20 @@ class Board:
             ind: int, index of where to play piece, [0,9)
 
         Return
-            new Board with move 
+            new Board with move
+
+        Throw
+            Exception, when ind is out of bounds
 
         '''
         # raise exception for invalid move
         if ind < 0 or ind >= Board.SIZE ** 2:
-            raise Exception('Invalid index value!')
+            raise IndexError()
         if self.__spaces__[ind]:
-            raise Exception('Space already occupied!')
+            raise LookupError()
 
-        # proceed with move by making copy and updating fields
-        copy = Board(self)
-        copy.__spaces__[ind] = self.__turn__
-        copy.__turn__ = Team.next(self.__turn__)
-        return copy
+        # proceed with move by making copy for move
+        return Board(predecessor=self, move=ind)
 
 
     def get(self, ind):
@@ -140,9 +145,12 @@ class Board:
         Return
             int, Team.X, Team.O, or Team.NEITHER
 
+        Throw
+            Exception, when ind is out of bounds
+
         '''
         if ind < 0 or ind >= Board.SIZE ** 2:
-            raise Exception('Invalid index value!')
+            raise IndexError()
         return self.__spaces__[ind]
 
 
@@ -153,3 +161,22 @@ class Board:
 
         '''
         return self.__turn__
+
+
+    def undo(self):
+        '''
+        Return
+            Board, board with state before last move or itself if board is
+                empty
+
+        '''
+        return self.__last__
+
+
+    def available(self):
+        '''
+        Return
+            int, number of available spaces on board
+
+        '''
+        return len([None for space in self if space == Team.NEITHER])
