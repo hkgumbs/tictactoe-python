@@ -81,6 +81,14 @@ class Board:
         return iter(self.__spaces__)
 
 
+    def __len__(self):
+        '''
+        Return
+            int, number of spaces on board
+        '''
+        return len(self.__spaces__)
+
+
     def __str__(self):
         '''
         Return
@@ -88,12 +96,12 @@ class Board:
         '''
         to_print = tuple([Team.get_string(space) for space in self.__spaces__])
         return '\n'.join([
-            '',
-            ' %s | %s | %s ',
-            '-----------',
-            ' %s | %s | %s ',
-            '-----------',
-            ' %s | %s | %s ',
+            '     0   1   2',
+            '  0  %s | %s | %s ',
+            '    -----------',
+            '  1  %s | %s | %s ',
+            '    -----------',
+            '  2  %s | %s | %s ',
             ''
         ]) % to_print
 

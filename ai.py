@@ -25,12 +25,9 @@ def get_winner(board):
     '''
     # count spaces beloning to each team
     spaces = {
-        Team.X: set([space for space in board if space == Team.X]),
-        Team.O: set([space for space in board if space == Team.O])
+        Team.X: set([i for i in range(len(board)) if board.get(i) == Team.X]),
+        Team.O: set([i for i in range(len(board)) if board.get(i) == Team.O])
     }
-
-    # DEBUG
-    print spaces
 
     # compare spaces that each team holds to winning combinations
     for combo in WINNING_COMBINATIONS:

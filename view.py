@@ -28,7 +28,7 @@ def main():
 
             # TODO
             winner = get_winner(board)
-            spaces_remaining = num_moves < Board.SIZE ** 2
+            spaces_remaining = num_moves < len(board)
             game_ongoing = not winner and spaces_remaining
         
         except Exception, e:
