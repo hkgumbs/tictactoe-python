@@ -36,9 +36,12 @@ class Team:
             str, representation of team as one-character string
 
         '''
-        if team == Team.FIRST: return 'X'
-        elif team == Team.SECOND: return 'O'
-        else: return ' '
+        if team == Team.FIRST:
+            return 'X'
+        elif team == Team.SECOND:
+            return 'O'
+        else:
+            return ' '
 
 
 class Board:
@@ -82,6 +85,7 @@ class Board:
         '''
         Return
             iter, iterator representing values of pieces on board.
+
         '''
         return iter(self.__spaces__)
 
@@ -90,6 +94,7 @@ class Board:
         '''
         Return
             int, number of spaces on board
+
         '''
         return len(self.__spaces__)
 
@@ -98,8 +103,10 @@ class Board:
         '''
         Return
             str, board in printable format.
+
         '''
-        to_print = tuple([Team.get_string(space) for space in self.__spaces__])
+        to_print = tuple(
+            [Team.get_string(space) for space in self.__spaces__])
         return '\n'.join([
             '     0   1   2',
             '  0  %s | %s | %s ',

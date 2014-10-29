@@ -5,7 +5,6 @@ Handle IO for tic-tac-toe game.
 from solver import get_winner, get_next_move
 from messages import UTIL, STATIC
 from models import Board, Team
-import re
 
 def get_team():
     '''
@@ -37,8 +36,10 @@ def check_game_over(board):
     if winner or not winner and not spaces_remaining:
         # if game over
         print board
-        if winner: print UTIL['lose_game']
-        else: print UTIL['tie_game']
+        if winner:
+            print UTIL['lose_game']
+        else:
+            print UTIL['tie_game']
 
         confirm = raw_input(UTIL['retry_prompt'])
         if confirm == 'y':
@@ -66,7 +67,9 @@ def main():
     print '\n%s\n' % STATIC['man']
 
     # initialize who goes first
-    human = get_team()
+    try:
+        human = get_team()
+    except EOFError: return
 
     # print empty board
     print board
@@ -126,40 +129,41 @@ def main():
 
                 else:
                     # default case is integer indicies
-
-                    m = re.match(r'(\d+)(,\d+)?', command)
-                    if m:
-                        if m.group(2) is not None:
+                    try:
+                        inds = [int(i) for i in command.split(',')]
+                        if len(inds) not in [1, 2]:
+                            # raise exception if input formatted incorrectly
+                            raise ValueError
+                        elif len(inds) == 2:
                             # user inputed coordinate as row and column
-                            move = int(m.group(1)) * Board.SIZE + \
-                                int(m.group(2).replace(',', ''))
-                        
+                            move = inds[0] * Board.SIZE + inds[1]
                         else:
                             # user inputed raw coordinate
                             # This option is not documented in the game
                             # instructions because it is mainly for testing.
-                            move = int(m.group(1))
-                        
-                        try:
-                            board = board.move(move)
-                            quit, restart = check_game_over(board)
-                            if quit:
-                                return
-                            elif restart:
-                                board = Board()
-                                human = get_team()
+                            move = inds[0]
 
-                            print board
+                        board = board.move(move)
+                        quit, restart = check_game_over(board)
+                        if quit:
+                            return
+                        elif restart:
+                            board = Board()
+                            human = get_team()
 
-                        except IndexError:
-                            # move is out of bounds
-                            print UTIL['index_error']
+                        print board
 
-                        except LookupError:
-                            # space is already occupied
-                            print UTIL['lookup_error']
+                    except IndexError:
+                        # move is out of bounds
+                        print UTIL['index_error']
 
-                    else: print UTIL['input_error']
+                    except LookupError:
+                        # space is already occupied
+                        print UTIL['lookup_error']
+
+                    except ValueError:
+                        # not an integer or improper format
+                        print UTIL['input_error']
             
             except KeyboardInterrupt:
                 # catch ctrl-c from user

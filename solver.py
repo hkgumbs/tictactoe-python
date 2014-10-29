@@ -31,8 +31,10 @@ def get_winner(board):
 
     # compare spaces that each team holds to winning combinations
     for combo in WINNING_COMBINATIONS:
-        if combo.issubset(spaces[Team.FIRST]): return Team.FIRST
-        if combo.issubset(spaces[Team.SECOND]): return Team.SECOND
+        if combo.issubset(spaces[Team.FIRST]):
+            return Team.FIRST
+        if combo.issubset(spaces[Team.SECOND]):
+            return Team.SECOND
 
     # if loop has finished then no winning combinatinos have been found
     return Team.NEITHER
