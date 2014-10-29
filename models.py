@@ -8,22 +8,22 @@ class Team:
     NEITHER is garunteed to evaluate to False.
     '''
     NEITHER = 0
-    X = 1
-    O = 2
+    FIRST = 1
+    SECOND = 2
 
     @staticmethod
-    def next(team):
+    def other(team):
         '''
         Given a valid team, this method will return the opposite team.
 
         Parameters
-            team: int, either Team.X or Team.O
+            team: int, either Team.FIRST or Team.SECOND
 
         Return
             opposite of team
 
         '''
-        return Team.X + Team.O - team
+        return Team.FIRST + Team.SECOND - team
 
 
     @staticmethod
@@ -36,8 +36,8 @@ class Team:
             str, representation of team as one-character string
 
         '''
-        if team == Team.X: return 'X'
-        elif team == Team.O: return 'O'
+        if team == Team.FIRST: return 'X'
+        elif team == Team.SECOND: return 'O'
         else: return ' '
 
 
@@ -63,7 +63,7 @@ class Board:
         if predecessor and move is not None:
             self.__spaces__ = list(predecessor.__spaces__)  # copy list
             self.__spaces__[move] = predecessor.__turn__
-            self.__turn__ = Team.next(predecessor.__turn__)
+            self.__turn__ = Team.other(predecessor.__turn__)
             self.__last__ = predecessor
 
         else:
@@ -72,7 +72,7 @@ class Board:
             self.__spaces__ = [Team.NEITHER for _ in range(Board.SIZE ** 2)]
 
             # set turn field to team who plays first (always X)
-            self.__turn__ = Team.X
+            self.__turn__ = Team.FIRST
 
             # empty board is its own predecessor, so undo is circular
             self.__last__ = self
@@ -143,7 +143,7 @@ class Board:
             ind: int, index of space [0,9)
 
         Return
-            int, Team.X, Team.O, or Team.NEITHER
+            int, Team.FIRST, Team.SECOND, or Team.NEITHER
 
         Throw
             Exception, when ind is out of bounds

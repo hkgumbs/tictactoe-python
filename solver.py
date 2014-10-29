@@ -20,19 +20,34 @@ def get_winner(board):
         board: Board, board to assess
 
     Return
-        int, Team.X, Team.O, or Team.NEITHER
+        int, Team.FIRST, Team.SECOND, or Team.NEITHER
 
     '''
     # count spaces beloning to each team
     spaces = {
-        Team.X: set([i for i in range(len(board)) if board.get(i) == Team.X]),
-        Team.O: set([i for i in range(len(board)) if board.get(i) == Team.O])
+        Team.FIRST: set([i for i in range(len(board)) if board.get(i) == Team.FIRST]),
+        Team.SECOND: set([i for i in range(len(board)) if board.get(i) == Team.SECOND])
     }
 
     # compare spaces that each team holds to winning combinations
     for combo in WINNING_COMBINATIONS:
-        if combo.issubset(spaces[Team.X]): return Team.X
-        if combo.issubset(spaces[Team.O]): return Team.O
+        if combo.issubset(spaces[Team.FIRST]): return Team.FIRST
+        if combo.issubset(spaces[Team.SECOND]): return Team.SECOND
 
     # if loop has finished then no winning combinatinos have been found
     return Team.NEITHER
+
+
+def get_next_move(board):
+    '''
+    Make next move according to minimax algorithm.
+
+    Paramaters
+        board: Board, board to assess
+
+    Return
+        Board, board after move
+
+    '''
+    # TODO implement - for now just taking first available space
+    return [i for i in range(len(board)) if board.get(i) == Team.NEITHER][0]
