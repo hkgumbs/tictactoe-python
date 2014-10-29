@@ -57,16 +57,16 @@ def main():
 
                 m = re.match(r'(\d+)(,\d+)?', command)
                 if m:
-                    if m.group(1) is not None:
+                    if m.group(2) is not None:
                         # user inputed coordinate as row and column
-                        move = int(m.group(0)) * Board.SIZE + \
-                            int(m.group(1).replace(',', ''))
+                        move = int(m.group(1)) * Board.SIZE + \
+                            int(m.group(2).replace(',', ''))
                     
                     else:
                         # user inputed raw coordinate
                         # This option is not documented in the game
                         # instructions because it is mainly for testing.
-                        move = int(m.group(0))
+                        move = int(m.group(1))
                     
                     try:
                         board = board.move(move)

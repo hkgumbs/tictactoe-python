@@ -60,7 +60,7 @@ class Board:
 
         '''
 
-        if predecessor and move:
+        if predecessor and move is not None:
             self.__spaces__ = list(predecessor.__spaces__)  # copy list
             self.__spaces__[move] = predecessor.__turn__
             self.__turn__ = Team.next(predecessor.__turn__)
