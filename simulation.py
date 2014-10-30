@@ -32,7 +32,6 @@ def check_game_over(board):
     winner = get_winner(board)
     spaces_remaining = board.available() > 0
 
-
     if winner or not winner and not spaces_remaining:
         # if game over
         print board

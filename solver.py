@@ -48,8 +48,29 @@ def get_next_move(board):
         board: Board, board to assess
 
     Return
-        Board, board after move
+        int, next move
 
     '''
-    # TODO implement - for now just taking first available space
-    return [i for i in range(len(board)) if board.get(i) == Team.NEITHER][0]
+    # if this is the first move, there is no need to calculate the options
+    # we can safely take any corner.
+    if board.available() == len(board): return 0
+    moves = [i for i in range(len(board)) if board.get(i) == Team.NEITHER]
+    return max([(score(board.move(i)), i) for i in moves])[1]
+
+
+def score(board):
+    '''
+    TODO
+    '''
+    winner = get_winner(board)
+    if winner:
+        # game won
+        return -1 if winner == board.turn() else 1
+
+    elif board.available():
+        # game is ongoing
+        return score(board.move(get_next_move(board)))
+
+    else:
+        # tie game
+        return 0
