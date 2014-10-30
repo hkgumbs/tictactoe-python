@@ -54,6 +54,7 @@ def get_next_move(board):
     # if this is the first move, there is no need to calculate the options
     # we can safely take any corner.
     if board.available() == len(board): return 0
+
     moves = [i for i in range(len(board)) if board.get(i) == Team.NEITHER]
     return max([(score(board.move(i)), i) for i in moves])[1]
 
