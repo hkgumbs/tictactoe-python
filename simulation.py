@@ -81,7 +81,7 @@ def main():
             move = get_next_move(board)
             board = board.move(move)
 
-            # print computer move in (row,col) format
+            # print computer move in (x,y) format
             print ' %s >>> %d,%d' % (
                 Team.get_string(cpu), move % 3, move / 3)
 
@@ -108,6 +108,7 @@ def main():
                         # if human player has any pieces on board then undo
                         # twice since CPU had last move
                         board = board.undo().undo()
+                        print board
 
                     else: print UTIL['undo_error']
 
@@ -135,8 +136,8 @@ def main():
                             # raise exception if input formatted incorrectly
                             raise ValueError
                         elif len(inds) == 2:
-                            # user inputed coordinate as row and column
-                            move = inds[0] * Board.SIZE + inds[1]
+                            # user inputed coordinate as x and y
+                            move = inds[1] * Board.SIZE + inds[0]
                         else:
                             # user inputed raw coordinate
                             # This option is not documented in the game

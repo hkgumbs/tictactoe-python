@@ -11,7 +11,7 @@ STATIC = {
         '\t"exit": quit application',
 
     'man': 'Tic Tac Toe\n' + \
-        '\tPlay your piece by typing [row, col] (i.e. 1,2)\n' + \
+        '\tPlay your piece by typing [x, y] coordinate (i.e. 1,2)\n' + \
         '\tType "help" to list additional commands.',
 
     'docs': 'Visit http://github.com/hkgumbs/tictactoe for more information.',
