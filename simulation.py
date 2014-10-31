@@ -1,5 +1,5 @@
 '''
-Handle IO for tic-tac-toe game.
+Handle IO for tic tac toe game.
 '''
 
 from solver import get_winner, get_next_move
