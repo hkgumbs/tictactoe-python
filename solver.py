@@ -20,7 +20,7 @@ def get_winner(board):
         board: Board, board to assess
 
     Return
-        int, Team.FIRST, Team.SECOND, or Team.NEITHER
+        Team, Team.FIRST, Team.SECOND, or Team.NEITHER
 
     '''
     # count spaces beloning to each team
@@ -40,6 +40,35 @@ def get_winner(board):
     return Team.NEITHER
 
 
+def minimax(board, cpu, depth):
+    '''
+    TODO
+    '''
+    winner = get_winner(board)
+    if winner == cpu:
+        # cpu won game
+        return 10 - depth, None
+
+    elif winner:
+        # human won game
+        return depth -10, None
+
+    elif not board.available():
+        # tie game
+        return 0, None
+
+    else:
+        moves = [i for i in range(len(board)) if board.get(i) == Team.NEITHER]
+        scores = [
+            (minimax(board.move(i), cpu, depth + 1)[0], i) for i in moves
+        ]
+        if board.turn() == cpu:
+            return max(scores)
+        else:
+            return min(scores)
+
+
+
 def get_next_move(board):
     '''
     Make next move according to minimax algorithm.
@@ -51,27 +80,8 @@ def get_next_move(board):
         int, next move
 
     '''
-    # if this is the first move, there is no need to calculate the options
-    # we can safely take any corner.
-    if board.available() == len(board): return 0
-
-    moves = [i for i in range(len(board)) if board.get(i) == Team.NEITHER]
-    return max([(score(board.move(i)), i) for i in moves])[1]
-
-
-def score(board):
-    '''
-    TODO
-    '''
-    winner = get_winner(board)
-    if winner:
-        # game won
-        return -1 if winner == board.turn() else 1
-
-    elif board.available():
-        # game is ongoing
-        return score(board.move(get_next_move(board)))
-
-    else:
-        # tie game
+    # if board is unplayed, calculations are not worth it
+    # just take first slot
+    if board.available() == len(board):
         return 0
+    return minimax(board, board.turn(), 0)[1]

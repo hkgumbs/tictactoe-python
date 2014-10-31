@@ -6,18 +6,19 @@ from solver import get_winner, get_next_move
 from messages import UTIL, STATIC
 from models import Board, Team
 
-def get_team():
+def get_teams():
     '''
-    Prompt user which team they want to be and return that team.
+    Prompt user which team they want to be and return assignments.
 
     Return
-        int, Team.FIRST or Team.SECOND
+        Team, human team, Team.FIRST or Team.SECOND
+        Team, cpu team
 
     '''
     if raw_input(UTIL['team_prompt']) == 'y':
-        return Team.FIRST
+        return Team.FIRST, Team.SECOND
     else:
-        return Team.SECOND
+        return Team.SECOND, Team.FIRST
 
 
 def check_game_over(board):
@@ -67,7 +68,7 @@ def main():
 
     # initialize who goes first
     try:
-        human = get_team()
+        human, cpu = get_teams()
     except EOFError: return
 
     # print empty board
@@ -75,21 +76,21 @@ def main():
 
     while True:
 
-        if board.turn() != human:
+        if board.turn() == cpu:
             # if computer player's turn, make move
             move = get_next_move(board)
             board = board.move(move)
 
             # print computer move in (row,col) format
             print ' %s >>> %d,%d' % (
-                Team.get_string(Team.other(human)), move % 3, move / 3)
+                Team.get_string(cpu), move % 3, move / 3)
 
             quit, restart = check_game_over(board)
             if quit:
                 return
             elif restart:
                 board = Board()
-                human = get_team()
+                human, cpu = get_teams()
 
             print board
 
@@ -117,14 +118,14 @@ def main():
                     confirm = raw_input(UTIL['reset_confirm'])
                     if confirm == 'y':
                         board = Board()
-                        human = get_team()
+                        human, cpu = get_teams()
                         print board
 
                 elif command == 'exit':
                     try:
                         confirm = raw_input(UTIL['exit_confirm'])
                         if confirm == 'y': return
-                    except: pass
+                    except EOFError: pass
 
                 else:
                     # default case is integer indicies
@@ -148,7 +149,7 @@ def main():
                             return
                         elif restart:
                             board = Board()
-                            human = get_team()
+                            human, cpu = get_teams()
 
                         print board
 

@@ -4,8 +4,8 @@ Defines the game board, which is a 3-by-3 square for exactly 2 teams.
 
 class Team:
     '''
-    Constants that represent the different valid states of a space or turn.
-    NEITHER is garunteed to evaluate to False.
+    Abstraction that encapsulates the different valid states of a space or
+    turn. NEITHER is garunteed to evaluate to False.
     '''
     NEITHER = 0
     FIRST = 1
@@ -128,13 +128,14 @@ class Board:
         Return
             new Board with move
 
-        Throw
-            Exception, when ind is out of bounds
+        Raise
+            IndexError, ind is out of bounds
+            LookupError, space is already occupied
 
         '''
         # raise exception for invalid move
         if ind < 0 or ind >= Board.SIZE ** 2:
-            raise IndexError()
+            raise IndexError(ind)
         if self.__spaces__[ind]:
             raise LookupError()
 
@@ -152,8 +153,8 @@ class Board:
         Return
             int, Team.FIRST, Team.SECOND, or Team.NEITHER
 
-        Throw
-            Exception, when ind is out of bounds
+        Raise
+            IndexError, when ind is out of bounds
 
         '''
         if ind < 0 or ind >= Board.SIZE ** 2:
