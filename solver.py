@@ -42,20 +42,30 @@ def get_winner(board):
 
 def minimax(board, cpu, depth):
     '''
-    TODO
+    Scores game state and determines best move for the next play.
+
+    Parameters
+        board: Board, board to assess
+        cpu: Team, which team the cpu controls
+        depth: number of recurses into future states
+
+    Return
+        int, score
+        int, best move or -1 if game is over
+
     '''
     winner = get_winner(board)
     if winner == cpu:
         # cpu won game
-        return 10 - depth, None
+        return 10 - depth, -1
 
     elif winner:
         # human won game
-        return depth -10, None
+        return depth -10, -1
 
     elif not board.available():
         # tie game
-        return 0, None
+        return 0, -1
 
     else:
         moves = [i for i in range(len(board)) if board.get(i) == Team.NEITHER]
@@ -71,7 +81,7 @@ def minimax(board, cpu, depth):
 
 def get_next_move(board):
     '''
-    Make next move according to minimax algorithm.
+    Suggest next move according to minimax algorithm.
 
     Paramaters
         board: Board, board to assess
