@@ -1,10 +1,10 @@
 '''
-Handle AI logic for tic-tac-toe game.
+Handle AI logic for tic tac toe game.
 '''
 
 from models import Team
 
-# There are only 8 winning cominations for a tic-tac-toe board, so it makes
+# There are only 8 winning cominations for a tic tac toe board, so it makes
 # more sense to hardcode the values as a constant. This is a tuple of sets to
 # make set operations more convenient.
 WINNING_COMBINATIONS = tuple([set(x) for x in [
