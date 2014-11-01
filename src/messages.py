@@ -34,3 +34,6 @@ UTIL = {
     'tie_game': 'Tie game!',
     'lose_game': 'You lost!',
 }
+
+# valid input entries to confirm prompts
+CONFIRM = ('y', 'Y', 'yes', 'YES')

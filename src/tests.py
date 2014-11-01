@@ -8,13 +8,13 @@ from solver import get_winner, get_next_move
 def test_naive():
     '''
     Test that cpu always defeats a naive player who always takes first
-    available space.
+    available space. Functioned as basic sanity test during production.
     '''
     for cpu in [Team.FIRST, Team.SECOND]:
         # perform test with cpu as both first and second player
 
         board = Board()
-        while not get_winner(board):
+        while not get_winner(board) and board.available():
             # play until winner is determined
 
             if cpu == board.turn():
@@ -22,8 +22,7 @@ def test_naive():
 
             else:
                 # play move on first available space
-                empty = [i for i in range(len(board)) if not board.get(i)]
-                board = board.move(empty[0])
+                board = board.move(board.available()[0])
 
         # cpu should always win
         assert get_winner(board) == cpu
@@ -41,6 +40,45 @@ def test_two_cpus():
     # board should end with no winner
     assert not get_winner(board)
 
+
+def test_never_lose():
+    '''
+    Test that cpu player never loses a match.
+    '''
+    for cpu in [Team.FIRST, Team.SECOND]:
+        # perform test with cpu as both first and second player
+        never_lose(Board(), cpu)
+
+
+def never_lose(board, cpu):
+    '''
+    Descend into every possible game state to determin that cpu player never
+    loses.
+
+    Parameters
+        board: Board, board to assess
+        cpu: Team constant, cpu team
+    '''
+    winner = get_winner(board)
+    if winner == cpu:
+        # base case, cpu wins
+        return
+
+    elif winner:
+        # base case, human wins, should never occur 
+        raise AssertionError()
+
+    elif board.available():
+        if board.turn() == cpu:
+            never_lose(board.move(get_next_move(board)), cpu)
+        else:
+            for space in board.available():
+                # make every possible move
+                never_lose(board.move(space), cpu)
+
+    # else tie game
+
 if __name__ == '__main__':
-    test_naive()
+    # test_naive()
     test_two_cpus()
+    test_never_lose()

@@ -105,8 +105,9 @@ class Board:
             str, board in printable format.
 
         '''
-        to_print = tuple(
-            [Team.get_string(space) for space in self.__spaces__])
+        result = tuple(
+            [Team.get_string(space) for space in self.__spaces__]
+        )
         return '\n'.join([
             '     0   1   2',
             '  0  %s | %s | %s ',
@@ -115,7 +116,7 @@ class Board:
             '    -----------',
             '  2  %s | %s | %s ',
             ''
-        ]) % to_print
+        ]) % result
 
 
     def move(self, ind):
@@ -135,12 +136,13 @@ class Board:
         '''
         # raise exception for invalid move
         if ind < 0 or ind >= Board.SIZE ** 2:
-            raise IndexError(ind)
-        if self.__spaces__[ind]:
+            raise IndexError()
+        elif self.__spaces__[ind]:
             raise LookupError()
 
-        # proceed with move by making copy for move
-        return Board(predecessor=self, move=ind)
+        else:
+            # proceed with move by making copy for move
+            return Board(predecessor=self, move=ind)
 
 
     def get(self, ind):
@@ -159,7 +161,8 @@ class Board:
         '''
         if ind < 0 or ind >= Board.SIZE ** 2:
             raise IndexError()
-        return self.__spaces__[ind]
+        else:
+            return self.__spaces__[ind]
 
 
     def turn(self):
@@ -184,7 +187,7 @@ class Board:
     def available(self):
         '''
         Return
-            int, number of available spaces on board
+            int[], indecies of available spaces on board
 
         '''
-        return len([None for space in self if space == Team.NEITHER])
+        return [i for i in range(len(self)) if not self.__spaces__[i]]

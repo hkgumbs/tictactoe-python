@@ -3,7 +3,7 @@ Handle IO for tic tac toe game.
 '''
 
 from solver import get_winner, get_next_move
-from messages import UTIL, STATIC
+from messages import UTIL, STATIC, CONFIRM
 from models import Board, Team
 
 def get_teams():
@@ -11,14 +11,19 @@ def get_teams():
     Prompt user which team they want to be and return assignments.
 
     Return
-        Team, human team, Team.FIRST or Team.SECOND
-        Team, cpu team
+        Team constant, human team, Team.FIRST or Team.SECOND
+        Team constant, cpu team
 
     '''
-    if raw_input(UTIL['team_prompt']) == 'y':
-        return Team.FIRST, Team.SECOND
-    else:
-        return Team.SECOND, Team.FIRST
+    while True:
+        # use loop and try to catch ctrl-d and ctrl-c and retry input
+        try:
+            if raw_input(UTIL['team_prompt']) in CONFIRM:
+                return Team.FIRST, Team.SECOND
+            else:
+                return Team.SECOND, Team.FIRST
+        except (EOFError, KeyboardInterrupt):
+            pass
 
 
 def check_game_over(board):
@@ -31,18 +36,18 @@ def check_game_over(board):
 
     '''
     winner = get_winner(board)
-    spaces_remaining = board.available() > 0
-
-    if winner or not winner and not spaces_remaining:
+    if winner or not board.available():
         # if game over
+
         print board
+
         if winner:
             print UTIL['lose_game']
         else:
             print UTIL['tie_game']
 
         confirm = raw_input(UTIL['retry_prompt'])
-        if confirm == 'y':
+        if confirm in CONFIRM:
             quit = False
             restart = True
         else:
@@ -67,9 +72,7 @@ def main():
     print '\n%s\n' % STATIC['man']
 
     # initialize who goes first
-    try:
-        human, cpu = get_teams()
-    except EOFError: return
+    human, cpu = get_teams()
 
     # print empty board
     print board
@@ -117,16 +120,15 @@ def main():
 
                 elif command == 'reset':
                     confirm = raw_input(UTIL['reset_confirm'])
-                    if confirm == 'y':
+                    if confirm in CONFIRM:
                         board = Board()
                         human, cpu = get_teams()
                         print board
 
                 elif command == 'exit':
-                    try:
-                        confirm = raw_input(UTIL['exit_confirm'])
-                        if confirm == 'y': return
-                    except EOFError: pass
+                    confirm = raw_input(UTIL['exit_confirm'])
+                    if confirm in CONFIRM:
+                        return
 
                 else:
                     # default case is integer indicies
