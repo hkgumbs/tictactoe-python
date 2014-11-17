@@ -64,7 +64,7 @@ def main():
     '''
     Control and loop game indefinitely until user quits. 
     '''
-    # initialize new game board and sovler
+    # initialize new game board and solver
     board = Board()
     solver = Solver()
 
@@ -81,14 +81,14 @@ def main():
 
         if board.turn() == cpu:
             # if computer player's turn, make move
-            move = sovler.get_next_move(board)
+            move = solver.get_next_move(board)
             board = board.move(move)
 
             # print computer move in (x,y) format
             print ' %s >>> %d,%d' % (
                 Team.string(cpu), move % 3, move / 3)
 
-            quit, restart = solver.check_game_over(board)
+            quit, restart = check_game_over(board, solver)
             if quit:
                 return
             elif restart:
@@ -147,7 +147,7 @@ def main():
                             move = inds[0]
 
                         board = board.move(move)
-                        quit, restart = solver.check_game_over(board)
+                        quit, restart = check_game_over(board, solver)
                         if quit:
                             return
                         elif restart:
