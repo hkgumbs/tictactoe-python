@@ -2,8 +2,7 @@
 Tests for tic tac toe solver.
 '''
 
-from models import Board, Team
-from solver import get_winner, get_next_move
+from models import Board, Team, Solver
 
 def test_naive():
     '''
@@ -14,18 +13,19 @@ def test_naive():
         # perform test with cpu as both first and second player
 
         board = Board()
-        while not get_winner(board) and board.available():
+        solver = Solver()
+        while not solver.get_winner(board) and board.get(Team.NEITHER):
             # play until winner is determined
 
             if cpu == board.turn():
-                board = board.move(get_next_move(board))
+                board = board.move(solver.get_next_move(board))
 
             else:
                 # play move on first available space
-                board = board.move(board.available()[0])
+                board = board.move(board.get(Team.NEITHER)[0])
 
         # cpu should always win
-        assert get_winner(board) == cpu
+        assert solver.get_winner(board) == cpu
 
 
 def test_two_cpus():
@@ -33,12 +33,13 @@ def test_two_cpus():
     Test that two cpu players should always end games in a draw.
     '''
     board = Board()
-    while board.available():
+    solver = Solver()
+    while board.get(Team.NEITHER):
         # always play the best calculated move
-        board = board.move(get_next_move(board))
+        board = board.move(solver.get_next_move(board))
 
     # board should end with no winner
-    assert not get_winner(board)
+    assert not solver.get_winner(board)
 
 
 def test_never_lose():
@@ -47,10 +48,10 @@ def test_never_lose():
     '''
     for cpu in [Team.FIRST, Team.SECOND]:
         # perform test with cpu as both first and second player
-        never_lose(Board(), cpu)
+        never_lose(Board(), Solver(), cpu)
 
 
-def never_lose(board, cpu):
+def never_lose(board, solver, cpu):
     '''
     Descend into every possible game state to determin that cpu player never
     loses.
@@ -59,7 +60,7 @@ def never_lose(board, cpu):
         board: Board, board to assess
         cpu: Team constant, cpu team
     '''
-    winner = get_winner(board)
+    winner = solver.get_winner(board)
     if winner == cpu:
         # base case, cpu wins
         return
@@ -68,13 +69,13 @@ def never_lose(board, cpu):
         # base case, human wins, should never occur 
         raise AssertionError()
 
-    elif board.available():
+    elif board.get(Team.NEITHER):
         if board.turn() == cpu:
-            never_lose(board.move(get_next_move(board)), cpu)
+            never_lose(board.move(solver.get_next_move(board)), solver, cpu)
         else:
-            for space in board.available():
+            for space in board.get(Team.NEITHER):
                 # make every possible move
-                never_lose(board.move(space), cpu)
+                never_lose(board.move(space), solver, cpu)
 
     # else tie game
 

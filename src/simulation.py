@@ -2,9 +2,8 @@
 Handle IO for tic tac toe game.
 '''
 
-from solver import get_winner, get_next_move
 from messages import UTIL, STATIC, CONFIRM
-from models import Board, Team
+from models import Board, Team, Solver
 
 def get_teams():
     '''
@@ -26,7 +25,7 @@ def get_teams():
             pass
 
 
-def check_game_over(board):
+def check_game_over(board, solver):
     '''
     Check whether game is over and prompt user to retry if it is.
 
@@ -35,8 +34,8 @@ def check_game_over(board):
         bool, whether simulation should restart
 
     '''
-    winner = get_winner(board)
-    if winner or not board.available():
+    winner = solver.get_winner(board)
+    if winner or not board.get(Team.NEITHER):
         # if game over
 
         print board
@@ -65,8 +64,9 @@ def main():
     '''
     Control and loop game indefinitely until user quits. 
     '''
-    # initialize new game board
+    # initialize new game board and sovler
     board = Board()
+    solver = Solver()
 
     # print instructions
     print '\n%s\n' % STATIC['man']
@@ -81,14 +81,14 @@ def main():
 
         if board.turn() == cpu:
             # if computer player's turn, make move
-            move = get_next_move(board)
+            move = sovler.get_next_move(board)
             board = board.move(move)
 
             # print computer move in (x,y) format
             print ' %s >>> %d,%d' % (
-                Team.get_string(cpu), move % 3, move / 3)
+                Team.string(cpu), move % 3, move / 3)
 
-            quit, restart = check_game_over(board)
+            quit, restart = solver.check_game_over(board)
             if quit:
                 return
             elif restart:
@@ -100,7 +100,7 @@ def main():
         else:
             try:
                 # request user input, remove whitespace, then parse
-                command = raw_input(' %s >>> ' % Team.get_string(board.turn()))
+                command = raw_input(' %s >>> ' % Team.string(board.turn()))
                 command = command.replace(' ', '')
                 
                 if command in STATIC:
@@ -147,7 +147,7 @@ def main():
                             move = inds[0]
 
                         board = board.move(move)
-                        quit, restart = check_game_over(board)
+                        quit, restart = solver.check_game_over(board)
                         if quit:
                             return
                         elif restart:
