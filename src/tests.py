@@ -62,7 +62,7 @@ def _never_lose(board, solver, cpu):
 
     elif winner:
         # base case, human wins, should never occur 
-        raise AssertionError()
+        assert False
 
     elif board.get(Team.NEITHER):
         if board.turn() == cpu:

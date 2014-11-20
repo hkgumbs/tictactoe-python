@@ -127,25 +127,13 @@ class Board:
         Take turn as current team in specified position.
 
         Parameters
-            ind: int, index of where to play piece, [0,9)
+            ind: int, index of where to play piece, [0,8]
 
         Return
             new Board with move
 
-        Raise
-            IndexError, ind is out of bounds
-            LookupError, space is already occupied
-
         '''
-        # raise exception for invalid move
-        if ind < 0 or ind >= Board.SIZE ** 2:
-            raise IndexError()
-        elif self._spaces[ind]:
-            raise LookupError()
-
-        else:
-            # proceed with move by making copy for move
-            return Board(predecessor=self, move=ind)
+        return Board(predecessor=self, move=ind)
 
 
     def get(self, team):
@@ -153,7 +141,7 @@ class Board:
         Get piece in current space
 
         Parameters
-            ind: int, index of space [0,9)
+            ind: int, index of space [0,8]
 
         Return
             int[], indecies of spaces belonging to team
@@ -175,7 +163,7 @@ class Board:
         '''
         Return
             Board, board with state before last move or itself if board is
-                empty
+                    empty
 
         '''
         return self._last

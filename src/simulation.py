@@ -65,7 +65,9 @@ class Solver:
 
 
 class Simulation:
-    '''Handle IO logic for simulation.'''
+    '''
+    Handle IO logic for simulation. Simulation objects work as 
+    '''
 
     # State variables
     INIT = 0
@@ -78,7 +80,7 @@ class Simulation:
     @staticmethod
     def get_input(prompt, restrictions):
         '''
-        Gets input from user while applying given constraints
+        Get input from user while applying given constraints
 
         Paramaters
             prompt: str, message to guide user
@@ -98,50 +100,52 @@ class Simulation:
     
 
     def __init__(self):
+        '''
+        Initialize fieleds.
+
+        '''
         self._solver = Solver()
         self.board = Board()
         self.state = Simulation.INIT
 
 
-    def has_next(self):
+    def __iter__(self):
         '''
-        Return
-            True if simulation is ongoing, False otherwise
+        Mark Simulation objects as iterable
 
         '''
-        return self.state != Simulation.FINISHED
-
+        return self
 
     def next(self):
         '''
-        Continues simulation until next piece of output is available
+        Continue simulation until next piece of output is available
 
         Return
             str, output from game since last call to next()
 
         '''
         if self.state == Simulation.INIT:
-            return self.state_init()
+            return self._state_init()
 
         elif self.state == Simulation.PROMPT_TEAM:
-            return self.state_prompt_team()            
+            return self._state_prompt_team()            
 
         elif self.state == Simulation.CPU_MOVE:
-            self.state_cpu_move()
+            return self._state_cpu_move()
 
         elif self.state == Simulation.PLAYER_MOVE:
-            self.state_player_move()
+            return self._state_player_move()
 
         elif self.state == Simulation.PROMPT_RESTART:
-            self._state_prompt_restart()
+            return self._state_prompt_restart()
 
-        else:  # unknown state reached
-            raise ValueError()
+        else:  # self.state == Simulation.FINISHED
+            raise StopIteration
 
 
-    def state_init(self):
+    def _state_init(self):
         '''
-        Updates state to PROMPT_TEAM
+        Update state to PROMPT_TEAM
 
         Return
             str, rules for simulation
@@ -150,9 +154,9 @@ class Simulation:
         return '\n%s\n' % messages.STATIC['man']
 
 
-    def state_prompt_team(self):
+    def _state_prompt_team(self):
         '''
-        Determines teams and updates state to either CPU_MOVE or PLAYER_MOVE
+        Determine teams and update state to either CPU_MOVE or PLAYER_MOVE
 
         Return
             str, board representation
@@ -169,9 +173,9 @@ class Simulation:
         return str(self.board)
 
 
-    def state_cpu_move(self):
+    def _state_cpu_move(self):
         '''
-        Makes cpu move and updates state to either PROMPT_RESTART or
+        Make cpu move and update state to either PROMPT_RESTART or
         PLAYER_MOVE
 
         Return
@@ -183,22 +187,22 @@ class Simulation:
         self.board = self.board.move(move)
 
         # result is cpu move and string representation of board
-        result_list = ['%s >>> %d' % (turn, move), str(self.board)]
+        result = ['%s >>> %d' % (turn, move), str(self.board)]
 
         # if game is over, append game over message
         if self.board.game_over():
-            result_list.append(messages.UTIL['lose_game'] \
+            result.append(messages.UTIL['lose_game'] \
                     if self.board.winner() else messages.UTIL['tie_game'])
             self.state = Simulation.PROMPT_RESTART
         else:
             self.state = Simulation.PLAYER_MOVE
 
-        return '\n'.join(result_list)
+        return '\n'.join(result)
 
 
-    def state_player_move(self):
+    def _state_player_move(self):
         '''
-        Request player move and updates state to either PROMPT_RESTART or
+        Request player move and update state to either PROMPT_RESTART or
         PLAYER_MOVE
 
         Return
@@ -233,19 +237,27 @@ class Simulation:
 
         else:  # integer coordinate
             self.board = self.board.move(int(command))
-            result_list = [str(self.board)]
+            result = [str(self.board)]
 
             # if game is over, append game over message
             if self.board.game_over():
-                result_list.append(messages.UTIL['tie_game'])
+                result.append(messages.UTIL['tie_game'])
                 self.state = Simulation.PROMPT_RESTART
             else:
                 self.state = Simulation.CPU_MOVE
 
-            return '\n'.join(result_list)
+            return '\n'.join(result)
 
 
-    def state_prompt_restart(self):
+    def _state_prompt_restart(self):
+        '''
+        Determine whether to re-run simulation and update state to either
+        PROMPT_TEAM of FINISHED
+
+        Return
+            str, board representation
+
+        '''
         # ask whether player wants to play again
         choice = Simulation.get_input(
             messages.UTIL['retry_prompt'], messages.BINARY)

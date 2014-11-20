@@ -2,8 +2,7 @@
 if __name__ == '__main__':
     try:
         from src import simulation
-        sim = simulation.Simulation()
-        while sim.has_next():
-            print sim.next()
+        for output in simulation.Simulation():
+            print output
     except (KeyboardInterrupt, EOFError):
         print  # print new line for clarity
