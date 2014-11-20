@@ -34,8 +34,8 @@ class Solver:
             return 0, -1
 
         else:
-            scores = [(self._minimax(
-                board.move(i), cpu, depth + 1)[0], i) for i in board.get(Team.NEITHER)]
+            scores = [(self._minimax(board.move(i), cpu, depth + 1)[0], i) \
+                    for i in board.get(Team.NEITHER)]
             if board.turn() == cpu:
                 return max(scores)
             else:
@@ -65,9 +65,7 @@ class Solver:
 
 
 class Simulation:
-    '''
-    Handle IO logic for simulation.
-    '''
+    '''Handle IO logic for simulation.'''
 
     # State variables
     INIT = 0
@@ -90,6 +88,7 @@ class Simulation:
             str, input from user
 
         '''
+        # keep requesting until valid input received
         while True:
             result = raw_input(prompt)
             if result in restrictions:
@@ -108,14 +107,15 @@ class Simulation:
         '''
         Return
             True if simulation is ongoing, False otherwise
+
         '''
-        return self._state != FINISHED
+        return self._state != Simulation.FINISHED
 
 
     def next(self):
         if self._state == Simulation.INIT:
             # game has just started, so print out rules
-            result = '\n%s\n' % STATIC['man']
+            result = '\n%s\n' % messages.STATIC['man']
             self._state == Simulation.PROMPT_TEAM
 
         elif self._state == Simulation.PROMPT_TEAM:
@@ -126,20 +126,20 @@ class Simulation:
                 self._state = Simulation.PLAYER_MOVE
             else:
                 self._state = Simulation.CPU_MOVE
-            result = self._board
+            result = self.board
 
         elif self._state == Simulation.CPU_MOVE:
             # if computer player's turn, make move
-            move = solver.get_next_move(board)
-            board = board.move(move)
+            move = solver.get_next_move(self.board)
+            self.board = self.board.move(move)
 
             # result is cpu move and string representation of board
-            result_list = [' %s >>> %d' % move, str(board)]
+            result_list = [' %s >>> %d' % move, str(self.board)]
 
             # if game is over, append game over message
-            if board.game_over():
+            if self.board.game_over():
                 result_list.append(messages.UTIL['lose_game'] \
-                    if board.winner() else messages.UTIL['tie_game'])
+                        if self.board.winner() else messages.UTIL['tie_game'])
                 self._state = Simulation.PROMPT_RESTART
             else:
                 self._state = Simulation.PLAYER_MOVE
@@ -148,9 +148,9 @@ class Simulation:
 
         elif self._state == Simulation.PLAYER_MOVE:
             # commands include available spaces, an action, or a help command
-            options = [str(x) for x in self._board.get(Team.NEITHER)] + \
-                messages.ACTIONS + messages.STATIC.keys()
-            prompt = '%s >>> ' % Team.string(board.turn())
+            options = [str(x) for x in self.board.get(Team.NEITHER)] + \
+                    messages.ACTIONS + messages.STATIC.keys()
+            prompt = '%s >>> ' % Team.string(self.board.turn())
             command = Simulation.get_input(prompt, options)
             
             if command in messages.STATIC:
@@ -158,32 +158,32 @@ class Simulation:
                 result = messages.STATIC[command]
 
             elif command == 'undo':
-                if board.turn() in board:
+                if board.turn() in self.board:
                     # check that player has a move that can be undone
                     # undo twice to undo cpu's move as well
-                    self._board = self._board.undo().undo()
-                    result = str(board)
+                    self.board = self.board.undo().undo()
+                    result = str(self.board)
                 else:
-                    result = UTIL['undo_error']
+                    result = messages.UTIL['undo_error']
 
             elif command == 'print':
-                result = str(board)
+                result = str(self.board)
 
             elif command == 'quit':
                 result = ''  # return empty line to print
                 self._state = Simulation.PROMPT_RESTART
 
             else:  # integer coordinate
-                self._board = self._board.move(command)
+                self.board = self.board.move(command)
                 self._state = Simulation.CPU_MOVE
-                result = str(board)
+                result = str(self.board)
 
         elif self._state == Simulation.PROMPT_RESTART:
             # ask whether player wants to play again
             choice = Simulation.get_input(
                 messages.UTIL['retry_prompt'], messages.BINARY)
             if choice in messages.YES:
-                self._board = Board()
+                self.board = Board()
                 self._state = Simulation.PROMPT_TEAM
             else:
                 self._state = Simulation.FINISHED

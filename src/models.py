@@ -1,6 +1,4 @@
-'''
-Defines the game board, which is a 3-by-3 square for exactly 2 teams.
-'''
+'''Defines the game board, which is a 3-by-3 square for exactly 2 teams.'''
 
 class Team:
     '''

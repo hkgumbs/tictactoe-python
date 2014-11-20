@@ -1,6 +1,4 @@
-'''
-Messages printed throughout simulation.
-'''
+'''Messages printed throughout simulation.'''
 
 STATIC = {
     'help': '\t"man": review rules\n' + \
@@ -18,7 +16,7 @@ STATIC = {
 }
 
 UTIL = {
-    'input_error': 'Invalid input! Type "man" to review rules.',
+    'input_error': 'Invalid input!',
     'lookup_error': 'This space is already occupied!',
     'undo_error': 'There are not enough moves to undo!',
 

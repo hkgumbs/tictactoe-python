@@ -1,6 +1,4 @@
-'''
-Tests for tic tac toe solver.
-'''
+'''Tests for tic tac toe solver.'''
 
 from models import Board, Team
 from simulation import Solver
@@ -30,9 +28,7 @@ def test_naive():
 
 
 def test_two_cpus():
-    '''
-    Test that two cpu players should always end games in a draw.
-    '''
+    '''Test that two cpu players should always end games in a draw.'''
     board = Board()
     solver = Solver()
     while board.get(Team.NEITHER):
@@ -44,9 +40,7 @@ def test_two_cpus():
 
 
 def test_never_lose():
-    '''
-    Test that cpu player never loses a match.
-    '''
+    '''Test that cpu player never loses a match.'''
     for cpu in [Team.FIRST, Team.SECOND]:
         # perform test with cpu as both first and second player
         _never_lose(Board(), Solver(), cpu)
