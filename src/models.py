@@ -37,9 +37,9 @@ class Team:
 
         '''
         if team == Team.FIRST:
-            return 'X'
+            return 'x'
         elif team == Team.SECOND:
-            return 'O'
+            return 'o'
         else:
             return ' '
 
@@ -55,10 +55,10 @@ class Board:
     # There are only 8 winning cominations for a tic tac toe board, so it
     # makes more sense to hardcode the values as a constant. This is a tuple
     # of sets to make set operations more convenient.
-    _WINNING_COMBINATIONS = tuple([set(x) for x in [
+    _WINNING_COMBINATIONS = [set(x) for x in [
         [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 4, 8],
         [0, 3, 6], [1, 4, 7], [2, 5, 8], [2, 4, 6]
-    ]])
+    ]]
 
     def __init__(self, predecessor=None, move=None):
         '''
@@ -115,12 +115,11 @@ class Board:
             [Team.string(space) for space in self._spaces]
         )
         return '\n'.join([
-            '     0   1   2',
-            '  0  %s | %s | %s ',
-            '    -----------',
-            '  1  %s | %s | %s ',
-            '    -----------',
-            '  2  %s | %s | %s ',
+            '   %s | %s | %s ',
+            '  -----------',
+            '   %s | %s | %s ',
+            '  -----------',
+            '   %s | %s | %s ',
             ''
         ]) % result
 

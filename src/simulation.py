@@ -1,7 +1,7 @@
 '''Define cpu behvior and interactions for simulation.'''
 
 from models import Team, Board
-from messages import CONFIRM, STATIC, UTIL
+import messages
 
 class Solver:
     '''Define AI logic for cpu player.'''
@@ -60,7 +60,8 @@ class Solver:
             return 0
 
         else:
-            return self._minimax(board, board.turn(), 0)[1]
+            _, move = self._minimax(board, board.turn(), 0)
+            return move
 
 
 class Simulation:
@@ -68,179 +69,123 @@ class Simulation:
     Handle IO logic for simulation.
     '''
 
+    # State variables
+    INIT = 0
+    PROMPT_TEAM = 1
+    PLAYER_MOVE = 2
+    CPU_MOVE = 3
+    PROMPT_RESTART = 4
+    FINISHED = 5
+
+    @staticmethod
+    def get_input(prompt, restrictions):
+        '''
+        Gets input from user while applying given constraints
+
+        Paramaters
+            prompt: str, message to guide user
+            restrictions: str[], list of valid input options
+
+        Return
+            str, input from user
+
+        '''
+        while True:
+            result = raw_input(prompt)
+            if result in restrictions:
+                return result
+            else:
+                print messages.UTIL['input_error']
+    
+
     def __init__(self):
+        self._state = Simulation.INIT
         self._solver = Solver()
-        self._board = Board()
+        self.board = Board()
 
-    def get_teams(self):
+
+    def has_next(self):
         '''
-        Prompt user which team they want to be and return assignments.
-
         Return
-            Team constant, human team, Team.FIRST or Team.SECOND
-            Team constant, cpu team
-
+            True if simulation is ongoing, False otherwise
         '''
-        while True:
-            # use loop and try to catch ctrl-d and ctrl-c and retry input
-            try:
-                if raw_input(UTIL['team_prompt']) in CONFIRM:
-                    return Team.FIRST, Team.SECOND
+        return self._state != FINISHED
+
+
+    def next(self):
+        if self._state == Simulation.INIT:
+            # game has just started, so print out rules
+            result = '\n%s\n' % STATIC['man']
+            self._state == Simulation.PROMPT_TEAM
+
+        elif self._state == Simulation.PROMPT_TEAM:
+            # ask user is they would like to go first
+            choice = Simulation.get_input(
+                messages.UTIL['team_prompt'], messages.BINARY)
+            if choice in messages.YES:
+                self._state = Simulation.PLAYER_MOVE
+            else:
+                self._state = Simulation.CPU_MOVE
+            result = self._board
+
+        elif self._state == Simulation.CPU_MOVE:
+            # if computer player's turn, make move
+            move = solver.get_next_move(board)
+            board = board.move(move)
+
+            # result is cpu move and string representation of board
+            result_list = [' %s >>> %d' % move, str(board)]
+
+            # if game is over, append game over message
+            if board.game_over():
+                result_list.append(messages.UTIL['lose_game'] \
+                    if board.winner() else messages.UTIL['tie_game'])
+                self._state = Simulation.PROMPT_RESTART
+            else:
+                self._state = Simulation.PLAYER_MOVE
+
+            result = '\n'.join(result_list)
+
+        elif self._state == Simulation.PLAYER_MOVE:
+            # commands include available spaces, an action, or a help command
+            options = [str(x) for x in self._board.get(Team.NEITHER)] + \
+                messages.ACTIONS + messages.STATIC.keys()
+            prompt = '%s >>> ' % Team.string(board.turn())
+            command = Simulation.get_input(prompt, options)
+            
+            if command in messages.STATIC:
+                # print help message
+                result = messages.STATIC[command]
+
+            elif command == 'undo':
+                if board.turn() in board:
+                    # check that player has a move that can be undone
+                    # undo twice to undo cpu's move as well
+                    self._board = self._board.undo().undo()
+                    result = str(board)
                 else:
-                    return Team.SECOND, Team.FIRST
-            except (EOFError, KeyboardInterrupt):
-                pass
+                    result = UTIL['undo_error']
 
+            elif command == 'print':
+                result = str(board)
 
-    def check_game_over(self, board, solver):
-        '''
-        Check whether game is over and prompt user to retry if it is.
+            elif command == 'quit':
+                result = ''  # return empty line to print
+                self._state = Simulation.PROMPT_RESTART
 
-        Return
-            bool, whether simulation should quit
-            bool, whether simulation should restart
+            else:  # integer coordinate
+                self._board = self._board.move(command)
+                self._state = Simulation.CPU_MOVE
+                result = str(board)
 
-        '''
-        winner = board.winner()
-        if winner or not board.get(Team.NEITHER):
-            # if game over
-
-            print board
-
-            if winner:
-                print UTIL['lose_game']
+        elif self._state == Simulation.PROMPT_RESTART:
+            # ask whether player wants to play again
+            choice = Simulation.get_input(
+                messages.UTIL['retry_prompt'], messages.BINARY)
+            if choice in messages.YES:
+                self._board = Board()
+                self._state = Simulation.PROMPT_TEAM
             else:
-                print UTIL['tie_game']
+                self._state = Simulation.FINISHED
 
-            confirm = raw_input(UTIL['retry_prompt'])
-            if confirm in CONFIRM:
-                quit = False
-                restart = True
-            else:
-                quit = True
-                restart = False  # doesn't matter
-
-        else:
-            quit = False
-            restart = False
-
-        return quit, restart
-        
-
-    def start(self):
-        '''
-        Control and loop game indefinitely until user quits, yielding output
-        as it occurs.
-        '''
-        # initialize new game board and solver
-        board = Board()
-        solver = Solver()
-
-        # yield instructions
-        yield '\n%s\n' % STATIC['man']
-
-        # initialize who goes first
-        human, cpu = self.get_teams()
-
-        # yield empty board
-        yield board
-
-        while True:
-
-            if board.turn() == cpu:
-                # if computer player's turn, make move
-                move = solver.get_next_move(board)
-                board = board.move(move)
-
-                # yield computer move in (x,y) format
-                yield ' %s >>> %d,%d' % (
-                    Team.string(cpu), move % 3, move / 3)
-
-                quit, restart = self.check_game_over(board, solver)
-                if quit:
-                    return
-                elif restart:
-                    board = Board()
-                    human, cpu = self.get_teams()
-
-                yield board
-
-            else:
-                try:
-                    # request user input, remove whitespace, then parse
-                    command = raw_input(' %s >>> ' % Team.string(board.turn()))
-                    command = command.replace(' ', '')
-                    
-                    if command in STATIC:
-                        yield STATIC[command]
-
-                    elif command == 'undo':
-                        if human in board:
-                            # if human player has any pieces on board then undo
-                            # twice since CPU had last move
-                            board = board.undo().undo()
-                            yield board
-
-                        else: yield UTIL['undo_error']
-
-                    elif command == 'print':
-                        yield board
-
-                    elif command == 'reset':
-                        confirm = raw_input(UTIL['reset_confirm'])
-                        if confirm in CONFIRM:
-                            board = Board()
-                            human, cpu = self.get_teams()
-                            yield board
-
-                    elif command == 'exit':
-                        confirm = raw_input(UTIL['exit_confirm'])
-                        if confirm in CONFIRM:
-                            return
-
-                    else:
-                        # default case is integer indicies
-                        try:
-                            inds = [int(i) for i in command.split(',')]
-                            if len(inds) not in [1, 2]:
-                                # raise exception if input formatted incorrectly
-                                raise ValueError
-                            elif len(inds) == 2:
-                                # user inputed coordinate as x and y
-                                move = inds[1] * Board.SIZE + inds[0]
-                            else:
-                                # user inputed raw coordinate
-                                # This option is not documented in the game
-                                # instructions because it is mainly for testing.
-                                move = inds[0]
-
-                            board = board.move(move)
-                            quit, restart = self.check_game_over(board, solver)
-                            if quit:
-                                return
-                            elif restart:
-                                board = Board()
-                                human, cpu = self.get_teams()
-
-                            yield board
-
-                        except IndexError:
-                            # move is out of bounds
-                            yield UTIL['index_error']
-
-                        except LookupError:
-                            # space is already occupied
-                            yield UTIL['lookup_error']
-
-                        except ValueError:
-                            # not an integer or improper format
-                            yield UTIL['input_error']
-                
-                except KeyboardInterrupt:
-                    # catch ctrl-c from user
-                    yield UTIL['keyboard_interrupt']
-
-                except EOFError:
-                    # catch ctrl-d from user and exit gracefully
-                    # undocumented because it provides no exit confirmation
-                    return
+        return result

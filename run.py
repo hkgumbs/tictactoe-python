@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 if __name__ == '__main__':
-    from src import simulation
-    sim = simulation.Simulation()
-    for line in sim.start():
-        print line
+    try:
+        from src import simulation
+        sim = simulation.Simulation()
+        while sim.has_next():
+            print sim.next()
+    except (KeyboardInterrupt, EOFError):
+        print  # print new line for clarity
