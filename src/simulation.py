@@ -6,42 +6,6 @@ from messages import CONFIRM, STATIC, UTIL
 class Solver:
     '''Define AI logic for cpu player.'''
 
-    # There are only 8 winning cominations for a tic tac toe board, so it
-    # makes more sense to hardcode the values as a constant. This is a tuple
-    # of sets to make set operations more convenient.
-    _WINNING_COMBINATIONS = tuple([set(x) for x in [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 4, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], [2, 4, 6]
-    ]])
-
-    def get_winner(self, board):
-        '''
-        Determine winner of game.
-
-        Paramaters
-            board: Board, board to assess
-
-        Return
-            Team constant, Team.FIRST, Team.SECOND, or Team.NEITHER
-
-        '''
-        # count spaces beloning to each team
-        spaces = {
-            Team.FIRST: set(board.get(Team.FIRST)),
-            Team.SECOND: set(board.get(Team.SECOND))
-        }
-
-        # compare spaces that each team holds to winning combinations
-        for combo in Solver._WINNING_COMBINATIONS:
-            if combo.issubset(spaces[Team.FIRST]):
-                return Team.FIRST
-            if combo.issubset(spaces[Team.SECOND]):
-                return Team.SECOND
-
-        # if loop has finished then no winning combinatinos have been found
-        return Team.NEITHER
-
-
     def _minimax(self, board, cpu, depth):
         '''
         Scores game state and determines best move for the next play.
@@ -56,7 +20,7 @@ class Solver:
             int, best move or -1 if game is over
 
         '''
-        winner = self.get_winner(board)
+        winner = board.winner()
         if winner == cpu:
             # cpu won game
             return 10 - depth, -1
@@ -101,8 +65,13 @@ class Solver:
 
 class Simulation:
     '''
-    Handle IO logic for tic tac toe game.
+    Handle IO logic for simulation.
     '''
+
+    def __init__(self):
+        self._solver = Solver()
+        self._board = Board()
+
     def get_teams(self):
         '''
         Prompt user which team they want to be and return assignments.
@@ -132,7 +101,7 @@ class Simulation:
             bool, whether simulation should restart
 
         '''
-        winner = solver.get_winner(board)
+        winner = board.winner()
         if winner or not board.get(Team.NEITHER):
             # if game over
 
@@ -160,7 +129,8 @@ class Simulation:
 
     def start(self):
         '''
-        Control and loop game indefinitely until user quits. 
+        Control and loop game indefinitely until user quits, yielding output
+        as it occurs.
         '''
         # initialize new game board and solver
         board = Board()
@@ -213,7 +183,7 @@ class Simulation:
 
                         else: yield UTIL['undo_error']
 
-                    elif command == 'yield':
+                    elif command == 'print':
                         yield board
 
                     elif command == 'reset':
@@ -274,4 +244,3 @@ class Simulation:
                     # catch ctrl-d from user and exit gracefully
                     # undocumented because it provides no exit confirmation
                     return
-

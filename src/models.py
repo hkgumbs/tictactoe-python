@@ -48,11 +48,17 @@ class Board:
     '''
     Encapsulation of spaces and board state. This class is effectively
     immutable to make recursive operations more intuitive. The Board object
-    keeps track of which team will make the next move, but it is unaware of
-    conditions for victory. Therefore, a Board object cannot tell if the game
-    is over or who has won.
+    keeps track of which team will make the next move.
     '''
     SIZE = 3
+
+    # There are only 8 winning cominations for a tic tac toe board, so it
+    # makes more sense to hardcode the values as a constant. This is a tuple
+    # of sets to make set operations more convenient.
+    _WINNING_COMBINATIONS = tuple([set(x) for x in [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 4, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], [2, 4, 6]
+    ]])
 
     def __init__(self, predecessor=None, move=None):
         '''
@@ -176,3 +182,37 @@ class Board:
 
         '''
         return self._last
+
+
+    def winner(self):
+        '''
+        Determine winner of game.
+
+        Return
+            Team constant, Team.FIRST, Team.SECOND, or Team.NEITHER
+
+        '''
+        # count spaces beloning to each team
+        spaces = {
+            Team.FIRST: set(self.get(Team.FIRST)),
+            Team.SECOND: set(self.get(Team.SECOND))
+        }
+
+        # compare spaces that each team holds to winning combinations
+        for combo in Board._WINNING_COMBINATIONS:
+            if combo.issubset(spaces[Team.FIRST]):
+                return Team.FIRST
+            if combo.issubset(spaces[Team.SECOND]):
+                return Team.SECOND
+
+        # if loop has finished then no winning combinatinos have been found
+        return Team.NEITHER
+
+
+    def game_over(self):
+        '''
+        Return
+            True if game has finished, False otherwise
+        '''
+        # True if either player has won or if no spaces remain.
+        return bool(self.winner() or not self.get(Team.NEITHER))

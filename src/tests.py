@@ -2,7 +2,8 @@
 Tests for tic tac toe solver.
 '''
 
-from models import Board, Team, Solver
+from models import Board, Team
+from simulation import Solver
 
 def test_naive():
     '''
@@ -14,7 +15,7 @@ def test_naive():
 
         board = Board()
         solver = Solver()
-        while not solver.get_winner(board) and board.get(Team.NEITHER):
+        while not board.winner() and board.get(Team.NEITHER):
             # play until winner is determined
 
             if cpu == board.turn():
@@ -25,7 +26,7 @@ def test_naive():
                 board = board.move(board.get(Team.NEITHER)[0])
 
         # cpu should always win
-        assert solver.get_winner(board) == cpu
+        assert board.winner() == cpu
 
 
 def test_two_cpus():
@@ -39,7 +40,7 @@ def test_two_cpus():
         board = board.move(solver.get_next_move(board))
 
     # board should end with no winner
-    assert not solver.get_winner(board)
+    assert not board.winner()
 
 
 def test_never_lose():
@@ -48,10 +49,10 @@ def test_never_lose():
     '''
     for cpu in [Team.FIRST, Team.SECOND]:
         # perform test with cpu as both first and second player
-        never_lose(Board(), Solver(), cpu)
+        _never_lose(Board(), Solver(), cpu)
 
 
-def never_lose(board, solver, cpu):
+def _never_lose(board, solver, cpu):
     '''
     Descend into every possible game state to determin that cpu player never
     loses.
@@ -60,7 +61,7 @@ def never_lose(board, solver, cpu):
         board: Board, board to assess
         cpu: Team constant, cpu team
     '''
-    winner = solver.get_winner(board)
+    winner = board.winner()
     if winner == cpu:
         # base case, cpu wins
         return
@@ -71,11 +72,11 @@ def never_lose(board, solver, cpu):
 
     elif board.get(Team.NEITHER):
         if board.turn() == cpu:
-            never_lose(board.move(solver.get_next_move(board)), solver, cpu)
+            _never_lose(board.move(solver.get_next_move(board)), solver, cpu)
         else:
             for space in board.get(Team.NEITHER):
                 # make every possible move
-                never_lose(board.move(space), solver, cpu)
+                _never_lose(board.move(space), solver, cpu)
 
     # else tie game
 
