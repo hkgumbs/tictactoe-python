@@ -146,9 +146,6 @@ class Board:
             str, board in printable format.
 
         '''
-        result = tuple(
-            [str(space) for space in self._spaces]
-        )
         return '\n'.join([
             '   %s | %s | %s ',
             '  -----------',
@@ -156,7 +153,7 @@ class Board:
             '  -----------',
             '   %s | %s | %s ',
             ''
-        ]) % result
+        ]) % tuple(map(str, self))
 
 
     def move(self, ind):

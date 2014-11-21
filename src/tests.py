@@ -13,20 +13,47 @@ class TestModels(unittest.TestCase):
         assert Team.FIRST.other() == Team.SECOND
         assert Team.SECOND.other() == Team.FIRST
 
+        # test unique hashes
+        h = {}
+        h[Team.FIRST] = True
+        h[Team.SECOND] = True
+        h[Team.NEITHER] = True
+        assert len(h) == 3
+
 
     def test_board(self):
         '''Test basic board functionality'''
         board = Board()
-        self._board_get_assert(board, 0, 0, len(board))
+        self._board_state_assert(board, 0, 0)
 
         board = board.move(0)
-        self._board_get_assert(board, 1, 0, len(board) - 1)
+        self._board_state_assert(board, 1, 0)
 
         board = board.undo()
-        self._board_get_assert(board, 0, 0, len(board))
+        self._board_state_assert(board, 0, 0)
+
+        # tie game
+        board = Board()
+        moves = [0, 1, 4, 2, 5, 3, 6, 8, 7]
+        for move in moves:
+            board = board.move(move)
+        self._board_state_assert(board, 5, 4, over=True)
+
+        # put Team.FIRST in a winning state
+        board = Board()
+        moves = [0, 3, 1, 4, 2]
+        for move in moves:
+            board = board.move(move)
+        board = Board().move(0).move(3).move(1).move(4).move(2)
+        self._board_state_assert(board, 3, 2, over=True, winner=Team.FIRST)
+
+        board = board.undo()
+        self._board_state_assert(board, 2, 2)
+        assert board.turn() == Team.FIRST
 
 
-    def _board_get_assert(self, board, num_first, num_second,  num_neither):
+    def _board_state_assert(self, board, num_first, num_second, 
+            over=False, winner=Team.NEITHER):
         '''
         Asserts whether board has the appropriate number of pieces
 
@@ -34,11 +61,13 @@ class TestModels(unittest.TestCase):
             board: Board
             num_first: int, number of spaces Team.FIRST should occupy
             num_second: int, number of spaces Team.SECOND should occupy
-            num_neither: int, number of spaces Team.NEITHER should occupy
         '''
-        assert len(board.get(Team.NEITHER)) == num_neither
         assert len(board.get(Team.FIRST)) == num_first
         assert len(board.get(Team.SECOND)) == num_second
+        assert len(board.get(Team.NEITHER)) == len(board) - \
+                num_first - num_second
+        assert board.game_over() == over
+        assert board.winner() == winner
 
 
 class TestSolver(unittest.TestCase):
@@ -66,7 +95,7 @@ class TestSolver(unittest.TestCase):
             assert board.winner() == cpu
 
 
-    def test_two_cpus(self):
+    def _test_two_cpus(self):  # TODO
         '''Test that two cpu players should always end games in a draw.'''
         board = Board()
         solver = Solver()
@@ -78,7 +107,7 @@ class TestSolver(unittest.TestCase):
         assert not board.winner()
 
 
-    def test_never_lose(self):
+    def _test_never_lose(self):  # TODO
         '''Test that cpu player never loses a match.'''
         for cpu in [Team.FIRST, Team.SECOND]:
             # perform test with cpu as both first and second player
@@ -104,7 +133,7 @@ class TestSolver(unittest.TestCase):
                 # base case, human wins, should never occur 
                 assert False
 
-        elif board.get(Team.NEITHER):
+        else:
             if board.turn() == cpu:
                 self._never_lose(
                         board.move(solver.get_next_move(board)), solver, cpu)
@@ -118,7 +147,7 @@ class TestSolver(unittest.TestCase):
 
 class TestSimulation(unittest.TestCase):
 
-    def test_dummy(self):
+    def test_(self):
         pass
 
 if __name__ == '__main__':
