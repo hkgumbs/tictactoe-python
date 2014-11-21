@@ -7,6 +7,9 @@ class Team:
     immutable.
     '''
 
+    # dictionary to associate opposing teams
+    OTHER = {}
+
     def __init__(self, marker):
         '''
         Initialize team object representation.
@@ -66,12 +69,14 @@ class Team:
             Team, opposite of team
 
         '''
-        return Team.FIRST if self == Team.SECOND else Team.FIRST
+        return Team.OTHER[self]
 
 # initialize team constants
 Team.FIRST = Team('x')
 Team.SECOND = Team('o')
 Team.NEITHER = Team(' ')
+Team.OTHER[Team.FIRST] = Team.SECOND
+Team.OTHER[Team.SECOND] = Team.FIRST
 
 
 class Board:

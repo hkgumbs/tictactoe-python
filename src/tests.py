@@ -4,7 +4,7 @@ from models import Board, Team
 from simulation import Solver, Simulation
 import unittest
 
-class TestSolver():
+class TestSolver(unittest.TestCase):
 
     def test_naive(self):
         '''
@@ -18,7 +18,6 @@ class TestSolver():
             solver = Solver()
             while not board.game_over():
                 # play until winner is determined
-
                 if cpu == board.turn():
                     board = board.move(solver.get_next_move(board))
 
@@ -27,7 +26,6 @@ class TestSolver():
                     board = board.move(board.get(Team.NEITHER)[0])
 
             # cpu should always win
-            print board
             assert board.winner() == cpu
 
 
@@ -43,11 +41,11 @@ class TestSolver():
         assert not board.winner()
 
 
-    # def test_never_lose(self):
-    #     '''Test that cpu player never loses a match.'''
-    #     for cpu in [Team.FIRST, Team.SECOND]:
-    #         # perform test with cpu as both first and second player
-    #         _never_lose(Board(), Solver(), cpu)
+    def test_never_lose(self):
+        '''Test that cpu player never loses a match.'''
+        for cpu in [Team.FIRST, Team.SECOND]:
+            # perform test with cpu as both first and second player
+            self._never_lose(Board(), Solver(), cpu)
 
 
     def _never_lose(self, board, solver, cpu):
@@ -70,14 +68,14 @@ class TestSolver():
 
         elif board.get(Team.NEITHER):
             if board.turn() == cpu:
-                _never_lose(board.move(solver.get_next_move(board)), solver, cpu)
+                self._never_lose(
+                        board.move(solver.get_next_move(board)), solver, cpu)
             else:
                 for space in board.get(Team.NEITHER):
                     # make every possible move
-                    _never_lose(board.move(space), solver, cpu)
+                    self._never_lose(board.move(space), solver, cpu)
 
         # else tie game
 
 if __name__ == '__main__':
-    TestSolver().test_naive()
-    # unittest.main()
+    unittest.main()
