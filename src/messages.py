@@ -8,7 +8,13 @@ STATIC = {
         '\t"quit": quit match',
 
     'man': 'Tic Tac Toe\n' + \
-        '\tPlay your piece by typing the integer order of the space (0-8)\n' + \
+        '\tPlay your piece by typing the number of the target space:\n' + \
+        '\n'.join([
+            '\t  0 | 1 | 2 ',
+            '\t -----------',
+            '\t  3 | 4 | 5 ',
+            '\t -----------',
+            '\t  6 | 7 | 8 ']) + '\n' + \
         '\tType "help" to list additional commands.',
 
     'docs': 'Visit http://github.com/hkgumbs/tictactoe for more information.',

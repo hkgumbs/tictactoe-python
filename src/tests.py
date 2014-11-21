@@ -1,8 +1,45 @@
 '''Tests for tic tac toe solver.'''
 
 from models import Board, Team
-from simulation import Solver, Simulation
+from controllers import Solver, Simulation
 import unittest
+
+class TestModels(unittest.TestCase):
+
+    def test_team(self):
+        '''Test basic Team object identities functions'''
+        assert Team.FIRST != Team.SECOND
+        assert not Team.NEITHER
+        assert Team.FIRST.other() == Team.SECOND
+        assert Team.SECOND.other() == Team.FIRST
+
+
+    def test_board(self):
+        '''Test basic board functionality'''
+        board = Board()
+        self._board_get_assert(board, 0, 0, len(board))
+
+        board = board.move(0)
+        self._board_get_assert(board, 1, 0, len(board) - 1)
+
+        board = board.undo()
+        self._board_get_assert(board, 0, 0, len(board))
+
+
+    def _board_get_assert(self, board, num_first, num_second,  num_neither):
+        '''
+        Asserts whether board has the appropriate number of pieces
+
+        Parameters
+            board: Board
+            num_first: int, number of spaces Team.FIRST should occupy
+            num_second: int, number of spaces Team.SECOND should occupy
+            num_neither: int, number of spaces Team.NEITHER should occupy
+        '''
+        assert len(board.get(Team.NEITHER)) == num_neither
+        assert len(board.get(Team.FIRST)) == num_first
+        assert len(board.get(Team.SECOND)) == num_second
+
 
 class TestSolver(unittest.TestCase):
 
@@ -50,21 +87,22 @@ class TestSolver(unittest.TestCase):
 
     def _never_lose(self, board, solver, cpu):
         '''
-        Recursively descend into every possible game state to determin that 
-        cpu player never loses.
+        Recursively descend into every possible game state to determine that
+        cpu never loses.
 
         Parameters
             board: Board, board to assess
             cpu: Team, cpu team
         '''
-        winner = board.winner()
-        if winner == cpu:
-            # base case, cpu wins
-            return
+        if board.game_over():
+            winner = board.winner()
+            if winner == cpu:
+                # base case, cpu wins
+                return
 
-        elif winner:
-            # base case, human wins, should never occur 
-            assert False
+            elif winner:
+                # base case, human wins, should never occur 
+                assert False
 
         elif board.get(Team.NEITHER):
             if board.turn() == cpu:
@@ -76,6 +114,12 @@ class TestSolver(unittest.TestCase):
                     self._never_lose(board.move(space), solver, cpu)
 
         # else tie game
+
+
+class TestSimulation(unittest.TestCase):
+
+    def test_dummy(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

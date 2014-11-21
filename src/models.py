@@ -175,10 +175,10 @@ class Board:
 
     def get(self, team):
         '''
-        Get piece in current space
+        Get all spaces belonging to team
 
         Parameters
-            ind: int, index of space [0,8]
+            team: Team
 
         Return
             int[], indecies of spaces belonging to team
@@ -190,7 +190,7 @@ class Board:
     def turn(self):
         '''
         Return
-            int, Team who will play next
+            Team, team which will play next
 
         '''
         return self._turn
@@ -235,6 +235,7 @@ class Board:
         '''
         Return
             True if game has finished, False otherwise
+
         '''
         # True if either player has won or if no spaces remain.
         return bool(self.winner() or not self.get(Team.NEITHER))
