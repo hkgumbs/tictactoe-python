@@ -3,6 +3,7 @@
 from models import Board, Team
 from controllers import Solver, Simulation
 import unittest
+import sys
 
 class TestModels(unittest.TestCase):
 
@@ -147,8 +148,32 @@ class TestSolver(unittest.TestCase):
 
 class TestSimulation(unittest.TestCase):
 
-    def test_(self):
-        pass
+    def test_one_move(self):
+        with open('test_input.txt', 'w+') as test_input:
+            lines = [
+                    'y\n',  # yes to play first
+                    '0\n'  # play in the first position
+            ]
+            for line in lines:
+                test_input.write(line)
+            test_input.seek(0)
+            sys.stdin = test_input
+
+            sim = Simulation()
+            assert sim.state() == Simulation.INIT
+
+            sim.next()
+            assert sim.state() == Simulation.PROMPT_TEAM
+
+            sim.next()
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()
+            assert sim.state() == Simulation.CPU_MOVE
+
+            assert len(sim.board().get(Team.FIRST)) == 1
+            assert len(sim.board().get(Team.SECOND)) == 0
+            assert sim.board().turn() == Team.SECOND
 
 if __name__ == '__main__':
     unittest.main()
