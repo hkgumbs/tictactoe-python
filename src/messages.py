@@ -9,8 +9,7 @@ STATIC = {
 
     'man': 'Tic Tac Toe\n' + \
         '\tPlay your piece by typing the integer order of the space (0-8)\n' + \
-        '\tType "help" to list additional commands.\n' + \
-        '\tQuit by typing "quit", ctrl-c, or ctrl-d',
+        '\tType "help" to list additional commands.',
 
     'docs': 'Visit http://github.com/hkgumbs/tictactoe for more information.',
 }

@@ -3,43 +3,73 @@
 class Team:
     '''
     Abstraction that encapsulates the different valid states of a space or
-    turn. NEITHER is garunteed to evaluate to False.
+    turn. NEITHER is garunteed to evaluate to False. Team objects are
+    immutable.
     '''
-    NEITHER = 0
-    FIRST = 1
-    SECOND = 2
 
-    @staticmethod
-    def other(team):
+    def __init__(self, marker):
+        '''
+        Initialize team object representation.
+
+        Parameters
+            marker: str, how to represent team in string representation of
+            board
+
+        '''
+        self._marker = marker
+
+
+    def __str__(self):
+        '''
+        Return
+            str, representation of team
+
+        '''
+        return self._marker
+
+
+    def __eq__(self, obj):
+        '''
+        Return
+            bool, True if two markers representthe same team, False otherwise
+
+        '''
+        return isinstance(obj, Team) and self._marker == obj._marker
+
+
+    def __hash__(self):
+        '''
+        Return
+            int, hash for object
+        '''
+        return hash(self._marker)
+
+    def __nonzero__(self):
+        '''
+        Return
+            bool, False if Team.NEITHER, True otherwise
+
+        '''
+        return self != Team.NEITHER
+
+
+    def other(self):
         '''
         Given a valid team, this method will return the opposite team.
 
         Parameters
-            team: int, either Team.FIRST or Team.SECOND
+            team: Team, either Team.FIRST or Team.SECOND
 
         Return
-            opposite of team
+            Team, opposite of team
 
         '''
-        return Team.FIRST + Team.SECOND - team
+        return Team.FIRST if self == Team.SECOND else Team.FIRST
 
-
-    @staticmethod
-    def string(team):
-        '''
-        Parameters
-            team: int, valid Team constant
-
-        Return
-            str, representation of team as one-character string
-
-        '''
-        if team == Team.FIRST:
-            return 'x'
-        elif team == Team.SECOND:
-            return 'o'
-        else:
-            return ' '
+# initialize team constants
+Team.FIRST = Team('x')
+Team.SECOND = Team('o')
+Team.NEITHER = Team(' ')
 
 
 class Board:
@@ -70,7 +100,7 @@ class Board:
         if predecessor and move is not None:
             self._spaces = list(predecessor._spaces)  # copy list
             self._spaces[move] = predecessor._turn
-            self._turn = Team.other(predecessor._turn)
+            self._turn = predecessor._turn.other()
             self._last = predecessor
 
         else:
@@ -110,7 +140,7 @@ class Board:
 
         '''
         result = tuple(
-            [Team.string(space) for space in self._spaces]
+            [str(space) for space in self._spaces]
         )
         return '\n'.join([
             '   %s | %s | %s ',
@@ -174,7 +204,7 @@ class Board:
         Determine winner of game.
 
         Return
-            Team constant, Team.FIRST, Team.SECOND, or Team.NEITHER
+            Team, Team.FIRST, Team.SECOND, or Team.NEITHER
 
         '''
         # count spaces beloning to each team
