@@ -63,7 +63,7 @@ class Solver:
 
 class Simulation:
     '''
-    Handle IO logic for simulation. Simulation objects work as iterable
+    Handle IO logic for simulation. Simulation objects function as iterable
     finite state machines.
     '''
 

@@ -5,7 +5,30 @@ from controllers import Solver, Simulation
 import unittest
 import sys
 
-class TestModels(unittest.TestCase):
+class BaseTest(unittest.TestCase):
+    '''Abstract test class'''
+
+    def board_state_assert(self, board, num_first, num_second, 
+            over=False, winner=Team.NEITHER):
+        '''
+        Asserts whether board has the appropriate number of pieces
+
+        Parameters
+            board: Board
+            num_first: int, number of spaces Team.FIRST should occupy
+            num_second: int, number of spaces Team.SECOND should occupy
+        '''
+        assert len(board.get(Team.FIRST)) == num_first
+        assert len(board.get(Team.SECOND)) == num_second
+        assert len(board.get(Team.NEITHER)) == len(board) - \
+                num_first - num_second
+        assert board.game_over() == over
+        assert board.winner() == winner
+        assert board.turn() == Team.FIRST \
+                if num_first == num_second else Team.SECOND
+
+
+class TestModels(BaseTest):
 
     def test_team(self):
         '''Test basic Team object identities functions'''
@@ -25,20 +48,20 @@ class TestModels(unittest.TestCase):
     def test_board(self):
         '''Test basic board functionality'''
         board = Board()
-        self._board_state_assert(board, 0, 0)
+        self.board_state_assert(board, 0, 0)
 
         board = board.move(0)
-        self._board_state_assert(board, 1, 0)
+        self.board_state_assert(board, 1, 0)
 
         board = board.undo()
-        self._board_state_assert(board, 0, 0)
+        self.board_state_assert(board, 0, 0)
 
         # tie game
         board = Board()
         moves = [0, 1, 4, 2, 5, 3, 6, 8, 7]
         for move in moves:
             board = board.move(move)
-        self._board_state_assert(board, 5, 4, over=True)
+        self.board_state_assert(board, 5, 4, over=True)
 
         # put Team.FIRST in a winning state
         board = Board()
@@ -46,32 +69,14 @@ class TestModels(unittest.TestCase):
         for move in moves:
             board = board.move(move)
         board = Board().move(0).move(3).move(1).move(4).move(2)
-        self._board_state_assert(board, 3, 2, over=True, winner=Team.FIRST)
+        self.board_state_assert(board, 3, 2, over=True, winner=Team.FIRST)
 
         board = board.undo()
-        self._board_state_assert(board, 2, 2)
+        self.board_state_assert(board, 2, 2)
         assert board.turn() == Team.FIRST
 
 
-    def _board_state_assert(self, board, num_first, num_second, 
-            over=False, winner=Team.NEITHER):
-        '''
-        Asserts whether board has the appropriate number of pieces
-
-        Parameters
-            board: Board
-            num_first: int, number of spaces Team.FIRST should occupy
-            num_second: int, number of spaces Team.SECOND should occupy
-        '''
-        assert len(board.get(Team.FIRST)) == num_first
-        assert len(board.get(Team.SECOND)) == num_second
-        assert len(board.get(Team.NEITHER)) == len(board) - \
-                num_first - num_second
-        assert board.game_over() == over
-        assert board.winner() == winner
-
-
-class TestSolver(unittest.TestCase):
+class TestSolver(BaseTest):
 
     def test_naive(self):
         '''
@@ -146,13 +151,14 @@ class TestSolver(unittest.TestCase):
         # else tie game
 
 
-class TestSimulation(unittest.TestCase):
+class TestSimulation(BaseTest):
 
-    def test_one_move(self):
+    def test_first_moves(self):
         with open('test_input.txt', 'w+') as test_input:
             lines = [
                     'y\n',  # yes to play first
-                    '0\n'  # play in the first position
+                    '0\n',  # play in the first position
+                    'undo'  # undo previous move
             ]
             for line in lines:
                 test_input.write(line)
@@ -165,15 +171,20 @@ class TestSimulation(unittest.TestCase):
             sim.next()
             assert sim.state() == Simulation.PROMPT_TEAM
 
-            sim.next()
+            sim.next()  # read y
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()
+            sim.next()  # read 0
             assert sim.state() == Simulation.CPU_MOVE
+            self.board_state_assert(sim.board(), 1, 0)
 
-            assert len(sim.board().get(Team.FIRST)) == 1
-            assert len(sim.board().get(Team.SECOND)) == 0
-            assert sim.board().turn() == Team.SECOND
+            sim.next()
+            assert sim.state() == Simulation.PLAYER_MOVE
+            self.board_state_assert(sim.board(), 1, 1)
+
+            sim.next()  # read undo
+            assert sim.state() == Simulation.PLAYER_MOVE
+            self.board_state_assert(sim.board(), 0, 0)
 
 if __name__ == '__main__':
     unittest.main()
