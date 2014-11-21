@@ -154,6 +154,7 @@ class TestSolver(BaseTest):
 class TestSimulation(BaseTest):
 
     def test_first_moves(self):
+        '''Test initial move states'''
         with open('test_input.txt', 'w+') as test_input:
             lines = [
                     'y\n',  # yes to play first
@@ -186,5 +187,71 @@ class TestSimulation(BaseTest):
             assert sim.state() == Simulation.PLAYER_MOVE
             self.board_state_assert(sim.board(), 0, 0)
 
+
+    def test_extra_features(self):
+        '''Test extra simulation commands'''
+        with open('test_input.txt', 'w+') as test_input:
+            lines = [
+                    'y\n',  # yes to play first
+                    'help\n',  # print extra commands
+                    'man\n',  # print manual
+                    'print\n',  # print board
+                    'docs\n',  # print attribution
+                    'quit\n',  # exit simulation
+                    'n'  # confirm exit
+            ]
+            for line in lines:
+                test_input.write(line)
+            test_input.seek(0)
+            sys.stdin = test_input
+
+            sim = Simulation()
+            assert sim.state() == Simulation.INIT
+
+            sim.next()
+            assert sim.state() == Simulation.PROMPT_TEAM
+
+            sim.next()  # read y
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read help
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read man
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read print
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read docs
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read quit
+            assert sim.state() == Simulation.PROMPT_RESTART         
+
+            sim.next()
+            assert sim.state() == Simulation.FINISHED
+            self.board_state_assert(sim.board(), 0, 0)
+
+
+    def test_full_match(self):
+        '''Test full match simulation'''
+        with open('test_input.txt', 'w+') as test_input:
+            lines = [
+                    'n\n',  # no to play second
+                    '1\n',  # play in the second position
+                    '2\n',  # play to right of previous piece
+                    'n'  # quit
+            ]
+            for line in lines:
+                test_input.write(line)
+            test_input.seek(0)
+            sys.stdin = test_input
+
+            sim = Simulation()
+            assert sim.state() == Simulation.INIT
+
 if __name__ == '__main__':
-    unittest.main()
+    with open('test_output.txt', 'w') as test_output:
+        sys.stdout = test_output  # hide prompts and output from simulation
+        unittest.main()
