@@ -101,7 +101,7 @@ class TestSolver(BaseTest):
             assert board.winner() == cpu
 
 
-    def _test_two_cpus(self):  # TODO
+    def test_two_cpus(self):  # TODO
         '''Test that two cpu players should always end games in a draw.'''
         board = Board()
         solver = Solver()
@@ -113,7 +113,7 @@ class TestSolver(BaseTest):
         assert not board.winner()
 
 
-    def _test_never_lose(self):  # TODO
+    def test_never_lose(self):  # TODO
         '''Test that cpu player never loses a match.'''
         for cpu in [Team.FIRST, Team.SECOND]:
             # perform test with cpu as both first and second player
@@ -239,9 +239,9 @@ class TestSimulation(BaseTest):
         with open('test_input.txt', 'w+') as test_input:
             lines = [
                     'n\n',  # no to play second
-                    '1\n',  # play in the second position
-                    '2\n',  # play to right of previous piece
-                    'n'  # quit
+                    '2\n',  # play in the second position
+                    '1\n',  # play to right of previous piece
+                    'n'  # quit (assuming player has lost)
             ]
             for line in lines:
                 test_input.write(line)
@@ -250,6 +250,33 @@ class TestSimulation(BaseTest):
 
             sim = Simulation()
             assert sim.state() == Simulation.INIT
+
+            sim.next()
+            assert sim.state() == Simulation.PROMPT_TEAM
+
+            sim.next()  # read n
+            assert sim.state() == Simulation.CPU_MOVE
+
+            sim.next()
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read 2
+            assert sim.state() == Simulation.CPU_MOVE
+
+            sim.next()
+            assert sim.state() == Simulation.PLAYER_MOVE
+
+            sim.next()  # read 1
+            assert sim.state() == Simulation.CPU_MOVE
+
+            sim.next()
+            assert sim.state() == Simulation.PROMPT_RESTART
+
+            sim.next()
+            assert sim.state() == Simulation.FINISHED
+            self.board_state_assert(sim.board(), 3, 2, \
+                    over=True, winner=Team.FIRST)
+
 
 if __name__ == '__main__':
     with open('test_output.txt', 'w') as test_output:
