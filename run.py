@@ -5,4 +5,4 @@ if __name__ == '__main__':
         for output in simulation.Simulation():
             print output
     except (KeyboardInterrupt, EOFError):
-        print  # print new line for clarity
+        pass

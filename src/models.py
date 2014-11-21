@@ -41,13 +41,15 @@ class Team:
         '''
         Return
             int, hash for object
+
         '''
         return hash(self._marker)
+
 
     def __nonzero__(self):
         '''
         Return
-            bool, False if Team.NEITHER, True otherwise
+            bool, True if not Team.NEITHER, False otherwise
 
         '''
         return self != Team.NEITHER
