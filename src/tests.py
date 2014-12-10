@@ -1,7 +1,9 @@
 '''Tests for tic tac toe solver.'''
 
-from models import Board, Team
-from controllers import Solver, Simulation
+from board import Board
+from team import Team
+from solver import Solver
+from simulation import Simulation
 import unittest
 import sys
 
