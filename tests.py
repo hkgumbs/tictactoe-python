@@ -1,16 +1,17 @@
 '''Tests for tic tac toe solver.'''
 
-from board import Board
-from team import Team
-from solver import Solver
-from simulation import Simulation
+import src
+from src.board import Board
+from src.team import Team
+from src.solver import Solver
+from src.simulation import Simulation
 import unittest
 import sys
 
 class BaseTest(unittest.TestCase):
     '''Abstract test class'''
 
-    def board_state_assert(self, board, num_first, num_second, 
+    def board_state_assert(self, board, num_first, num_second,
             over=False, winner=Team.NEITHER):
         '''
         Asserts whether board has the appropriate number of pieces
@@ -138,7 +139,7 @@ class TestSolver(BaseTest):
                 return
 
             elif winner:
-                # base case, human wins, should never occur 
+                # base case, human wins, should never occur
                 assert False
 
         else:
@@ -229,7 +230,7 @@ class TestSimulation(BaseTest):
             assert sim.state() == Simulation.PLAYER_MOVE
 
             sim.next()  # read quit
-            assert sim.state() == Simulation.PROMPT_RESTART         
+            assert sim.state() == Simulation.PROMPT_RESTART
 
             sim.next()
             assert sim.state() == Simulation.FINISHED
