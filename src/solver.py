@@ -1,5 +1,6 @@
 from .team import Team
 
+
 class Solver:
     '''Define AI logic for cpu player.'''
 
@@ -25,16 +26,15 @@ class Solver:
                 # tie game
                 return 0, -1
             else:  # player won
-                return depth -10, -1
+                return depth - 10, -1
 
         else:
-            scores = [(self._minimax(board.move(i), cpu, depth + 1)[0], i) \
-                    for i in board.get(Team.NEITHER)]
+            scores = [(self._minimax(board.move(i), cpu, depth + 1)[0], i)
+                      for i in board.get(Team.NEITHER)]
             if board.turn() == cpu:
                 return max(scores)
             else:
                 return min(scores)
-
 
     def get_next_move(self, board):
         '''

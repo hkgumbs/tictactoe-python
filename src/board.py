@@ -1,5 +1,6 @@
 from .team import Team
 
+
 class Board:
     '''
     Encapsulation of spaces and board state. This class is effectively
@@ -42,7 +43,6 @@ class Board:
             # empty board is its own predecessor, so undo is circular
             self._last = self
 
-
     def __iter__(self):
         '''
         Return
@@ -51,7 +51,6 @@ class Board:
         '''
         return iter(self._spaces)
 
-
     def __len__(self):
         '''
         Return
@@ -59,7 +58,6 @@ class Board:
 
         '''
         return len(self._spaces)
-
 
     def __str__(self):
         '''
@@ -76,7 +74,6 @@ class Board:
             ''
         ]) % tuple(map(str, self))
 
-
     def move(self, ind):
         '''
         Take turn as current team in specified position.
@@ -89,7 +86,6 @@ class Board:
 
         '''
         return Board(predecessor=self, move=ind)
-
 
     def get(self, team):
         '''
@@ -104,7 +100,6 @@ class Board:
         '''
         return [i for i in range(len(self)) if self._spaces[i] == team]
 
-
     def turn(self):
         '''
         Return
@@ -112,7 +107,6 @@ class Board:
 
         '''
         return self._turn
-
 
     def undo(self):
         '''
@@ -122,7 +116,6 @@ class Board:
 
         '''
         return self._last
-
 
     def winner(self):
         '''
@@ -147,7 +140,6 @@ class Board:
 
         # if loop has finished then no winning combinatinos have been found
         return Team.NEITHER
-
 
     def game_over(self):
         '''

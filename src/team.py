@@ -19,7 +19,6 @@ class Team:
         '''
         self._marker = marker
 
-
     def __str__(self):
         '''
         Return
@@ -27,7 +26,6 @@ class Team:
 
         '''
         return self._marker
-
 
     def __eq__(self, obj):
         '''
@@ -37,7 +35,6 @@ class Team:
         '''
         return isinstance(obj, Team) and self._marker == obj._marker
 
-
     def __hash__(self):
         '''
         Return
@@ -46,7 +43,6 @@ class Team:
         '''
         return hash(self._marker)
 
-
     def __bool__(self):
         '''
         Return
@@ -54,7 +50,6 @@ class Team:
 
         '''
         return self != Team.NEITHER
-
 
     def other(self):
         '''
@@ -68,6 +63,7 @@ class Team:
 
         '''
         return Team.OTHER[self]
+
 
 # initialize team constants
 Team.FIRST = Team('x')

@@ -3,6 +3,7 @@ from .solver import Solver
 from .team import Team
 from . import static
 
+
 class Simulation:
     '''
     Handle IO logic for simulation. Simulation objects function as iterable
@@ -38,7 +39,6 @@ class Simulation:
             else:
                 print(static.UTIL['input_error'])
 
-
     def __init__(self):
         '''
         Initialize fieleds.
@@ -47,7 +47,6 @@ class Simulation:
         self._solver = Solver()
         self._board = Board()
         self._state = Simulation.INIT
-
 
     def __iter__(self):
         '''
@@ -58,7 +57,6 @@ class Simulation:
 
         '''
         return self
-
 
     def __next__(self):
         '''
@@ -86,7 +84,6 @@ class Simulation:
         else:  # self._state == Simulation.FINISHED
             raise StopIteration
 
-
     def _state_init(self):
         '''
         Update state to PROMPT_TEAM
@@ -98,7 +95,6 @@ class Simulation:
         self._state = Simulation.PROMPT_TEAM
         return '\n%s\n' % static.INFO['man']
 
-
     def _state_prompt_team(self):
         '''
         Determine teams and update state to either CPU_MOVE or PLAYER_MOVE
@@ -109,14 +105,13 @@ class Simulation:
         '''
         # ask user is they would like to go first
         choice = Simulation.get_input(
-                static.UTIL['team_prompt'], static.BINARY)
+            static.UTIL['team_prompt'], static.BINARY)
         if choice in static.YES:
             self._state = Simulation.PLAYER_MOVE
         else:
             self._state = Simulation.CPU_MOVE
 
         return str(self._board)
-
 
     def _state_cpu_move(self):
         '''
@@ -136,14 +131,13 @@ class Simulation:
 
         # if game is over, append game over message
         if self._board.game_over():
-            result.append(static.UTIL['lose_game'] \
-                    if self._board.winner() else static.UTIL['tie_game'])
+            result.append(static.UTIL['lose_game']
+                          if self._board.winner() else static.UTIL['tie_game'])
             self._state = Simulation.PROMPT_RESTART
         else:
             self._state = Simulation.PLAYER_MOVE
 
         return '\n'.join(result)
-
 
     def _state_player_move(self):
         '''
@@ -156,7 +150,7 @@ class Simulation:
         '''
         # commands include available spaces, an action, or a help command
         options = [str(x) for x in self._board.get(Team.NEITHER)] + \
-                static.ACTIONS + list(static.INFO.keys())
+            static.ACTIONS + list(static.INFO.keys())
         prompt = '%s >>> ' % str(self._board.turn())
         command = Simulation.get_input(prompt, options)
 
@@ -193,7 +187,6 @@ class Simulation:
 
             return '\n'.join(result)
 
-
     def _state_prompt_restart(self):
         '''
         Determine whether to re-run simulation and update state to either
@@ -205,7 +198,7 @@ class Simulation:
         '''
         # ask whether player wants to play again
         choice = Simulation.get_input(
-                static.UTIL['retry_prompt'], static.BINARY)
+            static.UTIL['retry_prompt'], static.BINARY)
         if choice in static.YES:
             self._board = Board()
             self._state = Simulation.PROMPT_TEAM
@@ -214,7 +207,6 @@ class Simulation:
 
         return ''  # return empty line to print
 
-
     def board(self):
         '''
         Return
@@ -222,7 +214,6 @@ class Simulation:
 
         '''
         return self._board
-
 
     def state(self):
         '''

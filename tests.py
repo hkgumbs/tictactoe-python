@@ -8,11 +8,12 @@ from src.simulation import Simulation
 import unittest
 import sys
 
+
 class BaseTest(unittest.TestCase):
     '''Abstract test class'''
 
     def board_state_assert(self, board, num_first, num_second,
-            over=False, winner=Team.NEITHER):
+                           over=False, winner=Team.NEITHER):
         '''
         Asserts whether board has the appropriate number of pieces
 
@@ -24,11 +25,11 @@ class BaseTest(unittest.TestCase):
         assert len(board.get(Team.FIRST)) == num_first
         assert len(board.get(Team.SECOND)) == num_second
         assert len(board.get(Team.NEITHER)) == len(board) - \
-                num_first - num_second
+            num_first - num_second
         assert board.game_over() == over
         assert board.winner() == winner
         assert board.turn() == Team.FIRST \
-                if num_first == num_second else Team.SECOND
+            if num_first == num_second else Team.SECOND
 
 
 class TestModels(BaseTest):
@@ -46,7 +47,6 @@ class TestModels(BaseTest):
         h[Team.SECOND] = True
         h[Team.NEITHER] = True
         assert len(h) == 3
-
 
     def test_board(self):
         '''Test basic board functionality'''
@@ -103,7 +103,6 @@ class TestSolver(BaseTest):
             # cpu should always win
             assert board.winner() == cpu
 
-
     def test_two_cpus(self):  # TODO
         '''Test that two cpu players should always end games in a draw.'''
         board = Board()
@@ -115,13 +114,11 @@ class TestSolver(BaseTest):
         # board should end with no winner
         assert not board.winner()
 
-
     def test_never_lose(self):  # TODO
         '''Test that cpu player never loses a match.'''
         for cpu in [Team.FIRST, Team.SECOND]:
             # perform test with cpu as both first and second player
             self._never_lose(Board(), Solver(), cpu)
-
 
     def _never_lose(self, board, solver, cpu):
         '''
@@ -145,7 +142,7 @@ class TestSolver(BaseTest):
         else:
             if board.turn() == cpu:
                 self._never_lose(
-                        board.move(solver.get_next_move(board)), solver, cpu)
+                    board.move(solver.get_next_move(board)), solver, cpu)
             else:
                 for space in board.get(Team.NEITHER):
                     # make every possible move
@@ -160,9 +157,9 @@ class TestSimulation(BaseTest):
         '''Test initial move states'''
         with open('test_input.txt', 'w+') as test_input:
             lines = [
-                    'y\n',  # yes to play first
-                    '0\n',  # play in the first position
-                    'undo'  # undo previous move
+                'y\n',  # yes to play first
+                '0\n',  # play in the first position
+                'undo'  # undo previous move
             ]
             for line in lines:
                 test_input.write(line)
@@ -190,18 +187,17 @@ class TestSimulation(BaseTest):
             assert sim.state() == Simulation.PLAYER_MOVE
             self.board_state_assert(sim.board(), 0, 0)
 
-
     def test_extra_features(self):
         '''Test extra simulation commands'''
         with open('test_input.txt', 'w+') as test_input:
             lines = [
-                    'y\n',  # yes to play first
-                    'help\n',  # print extra commands
-                    'man\n',  # print manual
-                    'print\n',  # print board
-                    'docs\n',  # print attribution
-                    'quit\n',  # exit simulation
-                    'n'  # confirm exit
+                'y\n',  # yes to play first
+                'help\n',  # print extra commands
+                'man\n',  # print manual
+                'print\n',  # print board
+                'docs\n',  # print attribution
+                'quit\n',  # exit simulation
+                'n'  # confirm exit
             ]
             for line in lines:
                 test_input.write(line)
@@ -236,15 +232,14 @@ class TestSimulation(BaseTest):
             assert sim.state() == Simulation.FINISHED
             self.board_state_assert(sim.board(), 0, 0)
 
-
     def test_full_match(self):
         '''Test full match simulation'''
         with open('test_input.txt', 'w+') as test_input:
             lines = [
-                    'n\n',  # no to play second
-                    '2\n',  # play in the second position
-                    '1\n',  # play to right of previous piece
-                    'n'  # quit (assuming player has lost)
+                'n\n',  # no to play second
+                '2\n',  # play in the second position
+                '1\n',  # play to right of previous piece
+                'n'  # quit (assuming player has lost)
             ]
             for line in lines:
                 test_input.write(line)
@@ -277,8 +272,8 @@ class TestSimulation(BaseTest):
 
             next(sim)
             assert sim.state() == Simulation.FINISHED
-            self.board_state_assert(sim.board(), 3, 2, \
-                    over=True, winner=Team.FIRST)
+            self.board_state_assert(sim.board(), 3, 2,
+                                    over=True, winner=Team.FIRST)
 
 
 if __name__ == '__main__':
