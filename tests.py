@@ -172,21 +172,21 @@ class TestSimulation(BaseTest):
             sim = Simulation()
             assert sim.state() == Simulation.INIT
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PROMPT_TEAM
 
-            sim.next()  # read y
+            next(sim)  # read y
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read 0
+            next(sim)  # read 0
             assert sim.state() == Simulation.CPU_MOVE
             self.board_state_assert(sim.board(), 1, 0)
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PLAYER_MOVE
             self.board_state_assert(sim.board(), 1, 1)
 
-            sim.next()  # read undo
+            next(sim)  # read undo
             assert sim.state() == Simulation.PLAYER_MOVE
             self.board_state_assert(sim.board(), 0, 0)
 
@@ -211,28 +211,28 @@ class TestSimulation(BaseTest):
             sim = Simulation()
             assert sim.state() == Simulation.INIT
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PROMPT_TEAM
 
-            sim.next()  # read y
+            next(sim)  # read y
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read help
+            next(sim)  # read help
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read man
+            next(sim)  # read man
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read print
+            next(sim)  # read print
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read docs
+            next(sim)  # read docs
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read quit
+            next(sim)  # read quit
             assert sim.state() == Simulation.PROMPT_RESTART
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.FINISHED
             self.board_state_assert(sim.board(), 0, 0)
 
@@ -254,28 +254,28 @@ class TestSimulation(BaseTest):
             sim = Simulation()
             assert sim.state() == Simulation.INIT
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PROMPT_TEAM
 
-            sim.next()  # read n
+            next(sim)  # read n
             assert sim.state() == Simulation.CPU_MOVE
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read 2
+            next(sim)  # read 2
             assert sim.state() == Simulation.CPU_MOVE
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PLAYER_MOVE
 
-            sim.next()  # read 1
+            next(sim)  # read 1
             assert sim.state() == Simulation.CPU_MOVE
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.PROMPT_RESTART
 
-            sim.next()
+            next(sim)
             assert sim.state() == Simulation.FINISHED
             self.board_state_assert(sim.board(), 3, 2, \
                     over=True, winner=Team.FIRST)

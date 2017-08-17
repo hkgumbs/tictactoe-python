@@ -1,7 +1,7 @@
-from board import Board
-from solver import Solver
-from team import Team
-import static
+from .board import Board
+from .solver import Solver
+from .team import Team
+from . import static
 
 class Simulation:
     '''
@@ -22,7 +22,7 @@ class Simulation:
         '''
         Get input from user while applying given constraints
 
-        Paramaters
+        Parameters
             prompt: str, message to guide user
             restrictions: str[], list of valid input options
 
@@ -32,12 +32,12 @@ class Simulation:
         '''
         # keep requesting until valid input received
         while True:
-            result = raw_input(prompt)
+            result = input(prompt)
             if result in restrictions:
                 return result
             else:
-                print static.UTIL['input_error']
-    
+                print(static.UTIL['input_error'])
+
 
     def __init__(self):
         '''
@@ -60,7 +60,7 @@ class Simulation:
         return self
 
 
-    def next(self):
+    def __next__(self):
         '''
         Continue simulation until next piece of output is available
 
@@ -72,7 +72,7 @@ class Simulation:
             return self._state_init()
 
         elif self._state == Simulation.PROMPT_TEAM:
-            return self._state_prompt_team()            
+            return self._state_prompt_team()
 
         elif self._state == Simulation.CPU_MOVE:
             return self._state_cpu_move()
@@ -156,10 +156,10 @@ class Simulation:
         '''
         # commands include available spaces, an action, or a help command
         options = [str(x) for x in self._board.get(Team.NEITHER)] + \
-                static.ACTIONS + static.INFO.keys()
+                static.ACTIONS + list(static.INFO.keys())
         prompt = '%s >>> ' % str(self._board.turn())
         command = Simulation.get_input(prompt, options)
-        
+
         if command in static.INFO:
             # print help message
             return static.INFO[command]

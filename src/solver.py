@@ -1,4 +1,4 @@
-from team import Team
+from .team import Team
 
 class Solver:
     '''Define AI logic for cpu player.'''
@@ -41,7 +41,7 @@ class Solver:
         Suggest next move according to minimax algorithm. Board must represent an
         ongoing game.
 
-        Paramaters
+        Parameters
             board: Board, board to assess
 
         Return

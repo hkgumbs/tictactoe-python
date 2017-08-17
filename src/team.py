@@ -47,7 +47,7 @@ class Team:
         return hash(self._marker)
 
 
-    def __nonzero__(self):
+    def __bool__(self):
         '''
         Return
             bool, True if not Team.NEITHER, False otherwise
