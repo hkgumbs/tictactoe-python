@@ -3,7 +3,7 @@
 ## Usage
 
 ```
-python3 run.py
+./src/[play|test]
 ```
 
 
