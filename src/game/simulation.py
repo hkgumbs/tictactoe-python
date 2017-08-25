@@ -1,7 +1,7 @@
-from .board import Board
-from .solver import Solver
-from .team import Team
-from . import static
+from game.board import Board
+from game.solver import Solver
+from game.team import Team
+from game import static
 
 
 class Simulation:

@@ -1,4 +1,4 @@
-from .team import Team
+from game.team import Team
 
 
 class Solver:

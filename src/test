@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
+
 '''Tests for tic tac toe solver.'''
 
-import src
-from src.board import Board
-from src.team import Team
-from src.solver import Solver
-from src.simulation import Simulation
+from game.board import Board
+from game.team import Team
+from game.solver import Solver
+from game.simulation import Simulation
+from os.path import join
 import unittest
 import sys
 
@@ -155,7 +157,7 @@ class TestSimulation(BaseTest):
 
     def test_first_moves(self):
         '''Test initial move states'''
-        with open('test_input.txt', 'w+') as test_input:
+        with open(join('tmp', 'test_input.txt'), 'w+') as test_input:
             lines = [
                 'y\n',  # yes to play first
                 '0\n',  # play in the first position
@@ -189,7 +191,7 @@ class TestSimulation(BaseTest):
 
     def test_extra_features(self):
         '''Test extra simulation commands'''
-        with open('test_input.txt', 'w+') as test_input:
+        with open(join('tmp', 'test_input.txt'), 'w+') as test_input:
             lines = [
                 'y\n',  # yes to play first
                 'help\n',  # print extra commands
@@ -234,7 +236,7 @@ class TestSimulation(BaseTest):
 
     def test_full_match(self):
         '''Test full match simulation'''
-        with open('test_input.txt', 'w+') as test_input:
+        with open(join('tmp', 'test_input.txt'), 'w+') as test_input:
             lines = [
                 'n\n',  # no to play second
                 '2\n',  # play in the second position
@@ -277,6 +279,6 @@ class TestSimulation(BaseTest):
 
 
 if __name__ == '__main__':
-    with open('test_output.txt', 'w') as test_output:
+    with open(join('tmp', 'test_output.txt'), 'w') as test_output:
         sys.stdout = test_output  # hide prompts and output from simulation
         unittest.main()
